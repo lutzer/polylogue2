@@ -10,16 +10,54 @@
     tools:context="com.drl.polylogue2.MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Starting service" />
+        android:text="Starting Service ..."/>
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
+
+    <ProgressBar
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Send Msg"
-        android:onClick="onButtonClicked" />
+        android:layout_centerVertical="true">
+    </ProgressBar>
+
+    <LinearLayout
+        android:id="@+id/invisibleLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible">
+
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Connection to Polylogue II succesfully established."/>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="You will receive a notification, once there is a new submission."/>
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Close"
+            android:onClick="onButtonClicked"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
 </RelativeLayout>

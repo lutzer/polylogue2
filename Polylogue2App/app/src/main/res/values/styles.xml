@@ -6,6 +6,16 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <!-- Text styles -->
+    <style name="bigText">
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif-bold</item>
     </style>
 
 </resources>

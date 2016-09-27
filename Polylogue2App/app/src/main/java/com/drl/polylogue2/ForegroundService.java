@@ -12,26 +12,31 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 
-import de.tavendo.autobahn.WebSocketConnection;
-import de.tavendo.autobahn.WebSocketException;
-import de.tavendo.autobahn.WebSocketHandler;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 /**
  * Created by lutz on 26/09/16.
  */
 public class ForegroundService extends Service {
 
-    public static String SERVICE_NAME = "mazi-service";
+    public static String WEBSOCKET_URL = "http://192.168.1.4:8081";
     public static int NOTIFICATION_ID = 101;
-    public final String WEBSOCKET_URL = "ws://echo.websocket.org";
     public final int CONNECTION_CHECK_INTERVAL = 10000;
+
+
+    public static String DELIVERED_BROADCAST = "delivered-broadcast";
+    public static String CONNECTED_BROADCAST = "connected-broadcast";
 
     private Logger Log;
     private static String LOG_TAG = "MAZI-SERVICE: ";
@@ -41,8 +46,45 @@ public class ForegroundService extends Service {
         public String SEND_MESSSAGE = "Send Message";
     }
 
+    private Socket socket;
 
-    private final WebSocketConnection socket = new WebSocketConnection();
+    private Emitter.Listener onNewSubmission = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            JSONObject json = new JSONObject();
+
+            try {
+                json = (JSONObject) args[0];
+            } catch (Exception e) {
+                Log.error(e.getMessage());
+                return;
+            }
+
+            Log.info(LOG_TAG + "Received Submission: " + json.toString());
+
+            try {
+                showNotification("Message Received",NOTIFICATION_ID,json.getString("message"));
+            } catch (JSONException e) {
+                Log.error(e.getMessage());
+            }
+        }
+    };
+
+    private Emitter.Listener onSocketConnected = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            Log.info(LOG_TAG + "Socket Connected");
+
+            //answer to activity
+            Intent retIntent = new Intent(CONNECTED_BROADCAST);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(retIntent);
+
+        }
+    };
 
     // timer checks the connection every few seconds
     private Handler connectionTimer = new Handler();
@@ -66,6 +108,15 @@ public class ForegroundService extends Service {
         //logging
         Log = LoggerFactory.getLogger(ForegroundService.class);
 
+        try {
+            socket = IO.socket(WEBSOCKET_URL);
+            socket.on("submission:new",onNewSubmission);
+            socket.on("connected", onSocketConnected);
+
+        } catch (URISyntaxException e) {
+            Log.error(LOG_TAG + e.getMessage());
+        }
+
         Log.info(LOG_TAG + "Service created");
         connectionChecker.run();
 
@@ -85,7 +136,7 @@ public class ForegroundService extends Service {
                 boolean msgDelivered = sendMessage("290480-324ß-fake-id", message);
 
                 //answer to activity
-                Intent retIntent = new Intent(SERVICE_NAME);
+                Intent retIntent = new Intent(DELIVERED_BROADCAST);
                 retIntent.putExtra("msgDelivered", msgDelivered);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(retIntent);
 
@@ -96,39 +147,16 @@ public class ForegroundService extends Service {
         return Service.START_STICKY;
     }
 
-    private void showNotification(String action, int messageId, String message) {
-
-        Log.debug(LOG_TAG + "show notifiation");
-
-        Intent notificationIntent = new Intent(this, AnswerActivity.class);
-        notificationIntent.setAction(action);
-        PendingIntent resultPendingIntent =
-            PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT );
-
-
-        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        NotificationCompat.Builder mBuilder =
-            new NotificationCompat.Builder(this)
-                .setSound(notificationSound)
-                .setSmallIcon(R.drawable.message)
-                .setContentTitle(action)
-                .setContentText(message)
-                .setContentIntent(resultPendingIntent)
-                .setAutoCancel(true);
-
-        // Gets an instance of the NotificationManager service
-        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // Builds the notification and issues it.
-        mNotifyMgr.notify(messageId, mBuilder.build());
-    }
-
     @Override
     public void onDestroy() {
         Log.debug(LOG_TAG + "In onDestroy");
         super.onDestroy();
-        if (socket.isConnected())
+
+        if (socket != null && socket.connected()) {
             socket.disconnect();
+            socket.off("submission:new", onNewSubmission);
+            socket.off("connected", onSocketConnected);
+        }
         connectionTimer.removeCallbacksAndMessages(null);
         Log.info(LOG_TAG + "Service stopped");
     }
@@ -141,24 +169,18 @@ public class ForegroundService extends Service {
 
     public boolean sendMessage(String submissionId, String message) {
 
-        byte[] payload = "{}".getBytes();
+        JSONObject json = new JSONObject();
 
         try {
-
-            JSONObject json = new JSONObject();
             json.put("_id", submissionId);
             json.put("message", message);
-            payload  = json.toString().getBytes("UTF-8");
         } catch (JSONException e) {
-            Log.error(e.getMessage());
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             Log.error(e.getMessage());
             e.printStackTrace();
         }
 
-        if (socket.isConnected()) {
-            socket.sendRawTextMessage(payload);
+        if (socket != null && socket.connected()) {
+            socket.emit("message:new",json);
             return true;
         }
         return false;
@@ -166,55 +188,37 @@ public class ForegroundService extends Service {
 
     public void connectWebsocket() {
 
-        if (!socket.isConnected()) {
-
-            Log.debug(LOG_TAG + "Connecting to socket.");
-
-            try {
-
-                socket.connect(WEBSOCKET_URL, new WebSocketHandler() {
-
-                    @Override
-                    public void onOpen() {
-                        Log.info(LOG_TAG + "Status: Connected to " + WEBSOCKET_URL);
-                    }
-
-                    @Override
-                    public void onTextMessage(String payload) {
-
-                        JSONObject json;
-
-                        try {
-                            json = new JSONObject(payload);
-                        } catch (JSONException e) {
-                            Log.error(e.getMessage());
-                            e.printStackTrace();
-                            return;
-                        }
-
-                        try {
-                            Log.info(LOG_TAG + "Received message: " + json.toString());
-                            showNotification("Message Received", NOTIFICATION_ID, json.getString("message"));
-                        } catch (JSONException e) {
-                            Log.error(e.getMessage());
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    @Override
-                    public void onClose(int code, String reason) {
-                        Log.info(LOG_TAG + "Connection lost.");
-                    }
-
-                });
-
-            } catch (WebSocketException e) {
-                Log.error(LOG_TAG + e.toString());
-            }
+        if (socket != null && !socket.connected()) {
+            Log.debug(LOG_TAG + "Connecting to socket: " + getResources().getString(R.string.websocketUrl));
+            socket.connect();
         }
+    }
+
+    private void showNotification(String action, int messageId, String message) {
+
+        Log.debug(LOG_TAG + "show notifiation");
+
+        Intent notificationIntent = new Intent(this, AnswerActivity.class);
+        notificationIntent.setAction(action);
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT );
 
 
+        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSound(notificationSound)
+                        .setSmallIcon(R.drawable.message)
+                        .setContentTitle(action)
+                        .setContentText(message)
+                        .setContentIntent(resultPendingIntent)
+                        .setAutoCancel(true);
+
+        // Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // Builds the notification and issues it.
+        mNotifyMgr.notify(messageId, mBuilder.build());
     }
 
 }

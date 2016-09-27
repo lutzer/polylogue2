@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class AnswerActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             boolean msgDevilvered = intent.getBooleanExtra("msgDelivered", false);
             Log.debug(LOG_TAG + "Got return message from broadcast receiver, message delivered: " + msgDevilvered);
+            onMessageDelivered(msgDevilvered);
         }
     };
 
@@ -32,19 +34,19 @@ public class AnswerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_answer);
 
         // broadcast manager to communicate with service
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(ForegroundService.SERVICE_NAME));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(ForegroundService.DELIVERED_BROADCAST));
 
         //logging
         Log = LoggerFactory.getLogger(ForegroundService.class);
+        Log.info(LOG_TAG + "Activity created");
     }
 
     @Override
     protected void onDestroy() {
-        Log.info(LOG_TAG + "Activity in onDestroy");
-        // Unregister since the activity is about to be closed.
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
 
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         Log.info(LOG_TAG + "Activity destroyed");
     }
 
@@ -56,5 +58,14 @@ public class AnswerActivity extends AppCompatActivity {
         service.putExtra("message", editText.getText().toString());
         service.setAction(ForegroundService.ServiceAction.SEND_MESSSAGE);
         startService(service);
+    }
+
+    public void onMessageDelivered(boolean delivered) {
+        if (delivered) {
+            Toast.makeText(this, "Message succesfully sent.", Toast.LENGTH_LONG).show();
+            finish();
+        } else
+            Toast.makeText(this, "ERROR: Message could not be sent. Check your internet connection and try again.", Toast.LENGTH_LONG).show();
+
     }
 }
