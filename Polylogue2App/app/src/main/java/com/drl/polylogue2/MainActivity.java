@@ -1,20 +1,13 @@
 package com.drl.polylogue2;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            boolean msgDevilvered = intent.getBooleanExtra("msgDelivered", false);
             Log.debug(LOG_TAG + "Got return message from broadcast receiver, connected to socket.");
             onSocketConnected();
         }
@@ -51,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         service.setAction(ForegroundService.ServiceAction.CONNECT);
         startService(service);
 
-        Log.info(LOG_TAG + "Activity started");
+        Log.debug(LOG_TAG + "Activity started");
 
     }
 

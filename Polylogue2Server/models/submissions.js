@@ -16,7 +16,7 @@ var Submission = {
 
 			//escape double quotes TODO: escape all special strings
 			var msg = data.message.toString().replace(/"/g, '\\"');
-			console.log(msg);
+			log("debug","Submission msg",msg);
 
 			// var process = exec('/bin/python2 /home/pi/scripts/printer/polylogue.py -m "'+msg+'"',
 			// 	{ cwd : '/home/pi/scripts/printer'},

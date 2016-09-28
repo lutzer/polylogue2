@@ -9,32 +9,29 @@ module.exports = function (http) {
 
 	io.on('connection', function(socket){
 
-	    console.log('Socket: User connected');
+	    log("info",'Socket: User connected');
 	    socket.emit('connected');
 
 	    // Server event handlers
-
 	    function submissionAddedHandler(data) {
-	    	console.log('socket emit:<submission:new>');
+	    	log("info",'socket emit:<submission:new>');
 		    socket.emit('submission:new',data);
 	    }
 		appEvents.on('submission:new', submissionAddedHandler);
 
 		function newMessageHandler(data) {
-			console.log("socket event: <message:new>");
-			socket.emit('submission:new',data);
+			log("info","socket event: <message:new>");
 		}
 		socket.on('message:new', newMessageHandler);
 
 		socket.on('error', function(err) {
-	    	console.log(err);
+	    	log("error",err);
 		});
 
 
 	    // Clean up after disconnect
-
 	    socket.on('disconnect', function(){
-	        console.log('Socket: User disconnected');
+	        log("info",'Socket: User disconnected');
 
 	        //remove server events
 	        appEvents.removeListener('submissions:new',submissionAddedHandler);

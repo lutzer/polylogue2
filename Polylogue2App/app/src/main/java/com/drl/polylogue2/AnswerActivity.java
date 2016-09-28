@@ -38,7 +38,7 @@ public class AnswerActivity extends AppCompatActivity {
 
         //logging
         Log = LoggerFactory.getLogger(ForegroundService.class);
-        Log.info(LOG_TAG + "Activity created");
+        Log.debug(LOG_TAG + "Activity created");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class AnswerActivity extends AppCompatActivity {
 
         // Unregister since the activity is about to be closed.
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        Log.info(LOG_TAG + "Activity destroyed");
+        Log.debug(LOG_TAG + "Activity destroyed");
     }
 
     public void onButtonClicked(View view) {

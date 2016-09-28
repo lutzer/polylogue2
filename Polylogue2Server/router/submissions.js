@@ -36,9 +36,9 @@ router.get('/:id',function(req,res){
  */ 
 router.post('/', function (req, res) {
 
-    console.log('Received new Submission');
+    log("info",'Received new Submission');
 
-    console.log(req.body);
+    log("debug","Submission body:",req.body);
 
     var data = {
         message : req.body.message

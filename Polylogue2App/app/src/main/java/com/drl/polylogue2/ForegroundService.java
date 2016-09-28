@@ -18,7 +18,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
 import com.github.nkzawa.emitter.Emitter;
@@ -33,7 +32,6 @@ public class ForegroundService extends Service {
     public static String WEBSOCKET_URL = "http://192.168.1.4:8081";
     public static int NOTIFICATION_ID = 101;
     public final int CONNECTION_CHECK_INTERVAL = 10000;
-
 
     public static String DELIVERED_BROADCAST = "delivered-broadcast";
     public static String CONNECTED_BROADCAST = "connected-broadcast";
@@ -157,8 +155,8 @@ public class ForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.debug(LOG_TAG + "In onDestroy");
         super.onDestroy();
+        Log.debug(LOG_TAG + "In onDestroy");
 
         if (socket != null && socket.connected()) {
             socket.disconnect();
@@ -197,31 +195,30 @@ public class ForegroundService extends Service {
     public void connectWebsocket() {
 
         if (socket != null && !socket.connected()) {
-            Log.debug(LOG_TAG + "Connecting to socket: " + getResources().getString(R.string.websocketUrl));
+            Log.info(LOG_TAG + "Connecting to socket: " + getResources().getString(R.string.websocketUrl));
             socket.connect();
         }
     }
 
     private void showNotification(String action, int messageId, String message) {
 
-        Log.debug(LOG_TAG + "show notifiation");
+        Log.debug(LOG_TAG + "showing notifiation");
 
         Intent notificationIntent = new Intent(this, AnswerActivity.class);
         notificationIntent.setAction(action);
         PendingIntent resultPendingIntent =
-                PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT );
+            PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT );
 
 
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSound(notificationSound)
-                        .setSmallIcon(R.drawable.message)
-                        .setContentTitle(action)
-                        .setContentText(message)
-                        .setContentIntent(resultPendingIntent)
-                        .setAutoCancel(true);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+            .setSound(notificationSound)
+                .setSmallIcon(R.drawable.message)
+            .setContentTitle(action)
+            .setContentText(message)
+                .setContentIntent(resultPendingIntent)
+            .setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
