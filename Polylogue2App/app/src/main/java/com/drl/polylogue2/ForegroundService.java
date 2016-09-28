@@ -1,12 +1,13 @@
 package com.drl.polylogue2;
 
+import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
+import com.drl.polylogue2.utils.AlarmReceiver;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -31,7 +33,7 @@ public class ForegroundService extends Service {
 
     public static String WEBSOCKET_URL = "http://192.168.1.4:8081";
     public static int NOTIFICATION_ID = 101;
-    public final int CONNECTION_CHECK_INTERVAL = 10000;
+    public final int CONNECTION_CHECK_INTERVAL = 5000;
 
     public static String DELIVERED_BROADCAST = "delivered-broadcast";
     public static String CONNECTED_BROADCAST = "connected-broadcast";
@@ -40,8 +42,9 @@ public class ForegroundService extends Service {
     private static String LOG_TAG = "MAZI-SERVICE: ";
 
     public interface ServiceAction {
-        public String CONNECT = "connect";
-        public String SEND_MESSSAGE = "Send Message";
+        String CONNECT = "connect";
+        String SEND_MESSSAGE = "Send Message";
+        String CHECK_CONNECT = "check connection";
     }
 
     private Socket socket;
@@ -84,21 +87,6 @@ public class ForegroundService extends Service {
         }
     };
 
-    // timer checks the connection every few seconds
-    private Handler connectionTimer = new Handler();
-    private Runnable connectionChecker = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                connectWebsocket();
-            } finally {
-                connectionTimer.postDelayed(connectionChecker, CONNECTION_CHECK_INTERVAL);
-            }
-        }
-    };
-
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -116,15 +104,19 @@ public class ForegroundService extends Service {
         }
 
         Log.info(LOG_TAG + "Service created");
-        connectionChecker.run();
+
+        connectWebsocket();
+
+        keepServiceAlive();
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.info(LOG_TAG + "received command");
 
         if (intent != null) {
+
+            Log.debug(LOG_TAG + "received command: "  + intent.getAction());
 
             if (intent.getAction().equals(ServiceAction.SEND_MESSSAGE)) {
 
@@ -145,7 +137,11 @@ public class ForegroundService extends Service {
                     Intent retIntent = new Intent(CONNECTED_BROADCAST);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(retIntent);
                 }
+            } else if (intent.getAction().equals(ServiceAction.CHECK_CONNECT)) {
 
+                if (socket.connected()) {
+                    connectWebsocket();
+                }
             }
         }
 
@@ -163,7 +159,9 @@ public class ForegroundService extends Service {
             socket.off("submission:new", onNewSubmission);
             socket.off("connected", onSocketConnected);
         }
-        connectionTimer.removeCallbacksAndMessages(null);
+
+        //TODO: cancel alarmmanager
+        //connectionTimer.removeCallbacksAndMessages(null);
         Log.info(LOG_TAG + "Service stopped");
     }
 
@@ -171,6 +169,17 @@ public class ForegroundService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+
+    //keeps service running even if screen turned off
+    public void keepServiceAlive() {
+
+        Intent myAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent recurringAlarm = PendingIntent.getBroadcast(getApplicationContext(), 0, myAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager alarms = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+        CONNECTION_CHECK_INTERVAL, recurringAlarm);
     }
 
     public boolean sendMessage(String submissionId, String message) {

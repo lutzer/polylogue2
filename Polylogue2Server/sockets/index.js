@@ -10,17 +10,20 @@ module.exports = function (http) {
 	io.on('connection', function(socket){
 
 	    log("info",'Socket: User connected');
+
 	    socket.emit('connected');
+
+	    //TODO: check if there was any submissions in the past 5 minutes, and send them to the phone
 
 	    // Server event handlers
 	    function submissionAddedHandler(data) {
-	    	log("info",'socket emit:<submission:new>');
+	    	log("info",'Socket: emit <submission:new>', data);
 		    socket.emit('submission:new',data);
 	    }
 		appEvents.on('submission:new', submissionAddedHandler);
 
 		function newMessageHandler(data) {
-			log("info","socket event: <message:new>");
+			log("info","Socket: received <message:new>", data);
 		}
 		socket.on('message:new', newMessageHandler);
 
