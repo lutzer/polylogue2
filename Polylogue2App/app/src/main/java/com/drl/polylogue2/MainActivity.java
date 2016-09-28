@@ -58,16 +58,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
     public void onButtonClicked(View view) {
-
-        /*Button button = (Button) view;
-        Intent service = new Intent(MainActivity.this, ForegroundService.class);
-        service.putExtra("message", "Hello Websocket!");
-        service.setAction(ForegroundService.ServiceAction.SEND_MESSSAGE);
-        startService(service);*/
-
         finish();
     }
 

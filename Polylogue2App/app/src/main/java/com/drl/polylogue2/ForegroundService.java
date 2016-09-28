@@ -140,6 +140,14 @@ public class ForegroundService extends Service {
                 retIntent.putExtra("msgDelivered", msgDelivered);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(retIntent);
 
+            } else if (intent.getAction().equals(ServiceAction.CONNECT)) {
+
+                if (socket.connected()) {
+                    //answer that socket is connected
+                    Intent retIntent = new Intent(CONNECTED_BROADCAST);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(retIntent);
+                }
+
             }
         }
 

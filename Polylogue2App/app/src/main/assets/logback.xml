@@ -2,7 +2,7 @@
 
     <!-- Create a file appender for a log in the application's data directory -->
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>/data/user/0/com.drl.polylogue2/error.log</file>
+        <file>/sdcard/Android/data/com.drl.polylogue2/error.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
