@@ -9,10 +9,17 @@ var Submission = {
 
 	create : function(data,callback) {
 		var db = new Database();
+
+		//add timestamp
+		data.createdAt = new Date();
+
+		//add message array
+		data.messages = [];
+
 		db.submissions.insert(data,callback)
 
 		//print out submission
-		if (data.message) {
+		/*if (data.message) {
 
 			//escape double quotes TODO: escape all special strings
 			var msg = data.message.toString().replace(/"/g, '\\"');
@@ -27,13 +34,45 @@ var Submission = {
 			//     	}
 			// 	}
 			// );
-		}
+		}*/
+	},
+
+	addMessage : function(message, callback) {
+		var db = new Database();
+		db.submissions.findOne({ _id : message.submissionId }, (err,doc) => {
+			if (err) {
+				callback(err);
+				return;
+			}
+
+			message.createdAt = new Date();
+			doc.messages.push(message);
+
+
+			db.submissions.update({ _id : message.submissionId}, doc, callback);
+		});
 	},
 
 	get : function(id,callback) {
 
 		var db = new Database();
 		db.submissions.findOne({ _id : id }, callback);
+	},
+
+	getLast: function(callback) {
+		var db = new Database();
+		var cursor = db.submissions.find({}).limit(1).sort( { createdAt : -1 } )
+		cursor.toArray(function(err,docs) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			if (docs.length > 0 )
+				callback(err,docs[0],0);
+			else
+				callback(err,undefined,0);
+
+		});
 	},
 
 	list : function(options,callback) {

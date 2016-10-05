@@ -16,7 +16,7 @@ var router = express.Router();
 router.get('/',function(req,res){
 
     submissions.list({},function(err,docs) {
-        utils.handleError(err,res);
+        if (utils.handleError(err)) return;
         res.send(docs);
     });
 });
@@ -26,7 +26,7 @@ router.get('/',function(req,res){
  */ 
 router.get('/:id',function(req,res){
     submissions.get(req.params.id, function(err,doc) {
-        utils.handleError(err);
+        if (utils.handleError(err)) return;
         res.send(doc);
     });
 });
@@ -40,15 +40,20 @@ router.post('/', function (req, res) {
 
     log("debug","Submission body:",req.body);
 
-    var data = {
-        message : req.body.message
-    };
+    var data = req.body;
 
-    // trigger socket event and send mesagge to printer
-    appEvents.emit('submission:new',data)
+    submissions.create(data, function(err, docs) {
+        if (utils.handleError(err)) return;
 
-    // send answer
-    res.send(data);
+        log("info",'Submission added to database');
+
+        // trigger socket event
+        appEvents.emit('submission:new',docs[0])
+
+        // send answer
+        res.send(docs[0]);
+
+    });
 });
 
 module.exports = router;

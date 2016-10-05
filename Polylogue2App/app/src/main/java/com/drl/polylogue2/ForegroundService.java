@@ -48,6 +48,7 @@ public class ForegroundService extends Service {
     }
 
     private Socket socket;
+    private String lastSubmissionId = null;
 
     private Emitter.Listener onNewSubmission = new Emitter.Listener() {
 
@@ -66,7 +67,7 @@ public class ForegroundService extends Service {
             Log.info(LOG_TAG + "Received Submission: " + json.toString());
 
             try {
-                showNotification("Message Received",NOTIFICATION_ID,json.getString("message"));
+                showNotification("Message Received",json.getString("_id"),json.getString("message"));
             } catch (JSONException e) {
                 Log.error(e.getMessage());
             }
@@ -121,9 +122,10 @@ public class ForegroundService extends Service {
             if (intent.getAction().equals(ServiceAction.SEND_MESSSAGE)) {
 
                 String message = intent.getStringExtra("message");
+                String id = intent.getStringExtra("id");
 
                 // send message to server
-                boolean msgDelivered = sendMessage("290480-324ß-fake-id", message);
+                boolean msgDelivered = sendMessage(id, message);
 
                 //answer to activity
                 Intent retIntent = new Intent(DELIVERED_BROADCAST);
@@ -187,7 +189,7 @@ public class ForegroundService extends Service {
         JSONObject json = new JSONObject();
 
         try {
-            json.put("_id", submissionId);
+            json.put("submissionId", submissionId);
             json.put("message", message);
         } catch (JSONException e) {
             Log.error(e.getMessage());
@@ -209,12 +211,20 @@ public class ForegroundService extends Service {
         }
     }
 
-    private void showNotification(String action, int messageId, String message) {
+    private void showNotification(String action, String submissionId, String message) {
+
+        // do not notify for a submission twice
+        if (lastSubmissionId == submissionId)
+            return;
+        else
+            lastSubmissionId = submissionId;
 
         Log.debug(LOG_TAG + "showing notifiation");
 
         Intent notificationIntent = new Intent(this, AnswerActivity.class);
         notificationIntent.setAction(action);
+        notificationIntent.putExtra("message", message);
+        notificationIntent.putExtra("id",submissionId);
         PendingIntent resultPendingIntent =
             PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT );
 
@@ -223,16 +233,16 @@ public class ForegroundService extends Service {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
             .setSound(notificationSound)
-                .setSmallIcon(R.drawable.message)
+            .setSmallIcon(R.drawable.message)
             .setContentTitle(action)
             .setContentText(message)
-                .setContentIntent(resultPendingIntent)
+            .setContentIntent(resultPendingIntent)
             .setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
-        mNotifyMgr.notify(messageId, mBuilder.build());
+        mNotifyMgr.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
 }
