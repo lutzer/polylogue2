@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AnswerActivity"></activity>
+        <activity android:name=".AnswerActivity">
+        </activity>
 
         <service android:name=".ForegroundService"></service>
 

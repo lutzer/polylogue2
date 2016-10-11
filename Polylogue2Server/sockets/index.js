@@ -1,6 +1,7 @@
 var socketio = require('socket.io');
-var submissions = r_require('/models/submissions');
+var _ = require('underscore');
 
+var submissions = r_require('/models/submissions');
 var appEvents = r_require('/utils/appEvents');
 var config = r_require('/config.js');
 
@@ -14,18 +15,15 @@ module.exports = function (http) {
 
 	    socket.emit('connected');
 
-	    //check if there was one submission in the last 5 minutes and return it
-        submissions.getLast( (err, doc) => {
+	    //check if there are any active submissions and return them
+        submissions.getActive( (err, docs) => {
             if (err) {
-            	log("error","Fetching last submission: ", err)
+            	log("error","Fetching active submission: ", err)
             	return;
             }
-
-            if (typeof(doc) == 'undefined')
-            	return;
-
-            if ( Date.parse(doc.createdAt) > Date.now() - config.submissionDiscussTime )
+            _.each(docs, function(doc) {
             	socket.emit('submission:new',doc);
+            })
         });
 
 	    // Server event handlers
@@ -43,6 +41,14 @@ module.exports = function (http) {
 		};
 		socket.on('message:new', newMessageHandler);
 
+		function submissionExpiredHandler(data) {
+			log("info","Socket: received <submission:expired>", data);
+			submissions.setExpired(data, (err) => {
+				if (err) log("error", "Error handling <submission:expired>: ", err);
+			});
+		}
+		socket.on('submission:expired', submissionExpiredHandler);
+
 		function errorHandler(err) {
 			log("error","Socket error: ",err);
 		};
@@ -56,6 +62,7 @@ module.exports = function (http) {
 	        appEvents.removeListener('submission:new',submissionAddedHandler);
 	        socket.removeListener('error',errorHandler);
 	        socket.removeListener('message:new',newMessageHandler);
+	        socket.removeListener('submission:expired',submissionExpiredHandler)
 	    });
 
 	});

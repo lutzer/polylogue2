@@ -1,5 +1,5 @@
 var fs = require('fs');
-var exec = require('child_process').exec;
+var _ = require('underscore');
 
 var Database = r_require('/models/database');
 var config = r_require('/config');
@@ -12,29 +12,17 @@ var Submission = {
 
 		//add timestamp
 		data.createdAt = new Date();
-
 		//add message array
 		data.messages = [];
 
+		//set expire time
+		data.expired = false;
+		data.expiresAt = new Date(Date.now() + config.submissionExpireTime).toJSON();
+
+		if (!_.has(data,'boxId'))
+			data.boxId = -1;
+
 		db.submissions.insert(data,callback)
-
-		//print out submission
-		/*if (data.message) {
-
-			//escape double quotes TODO: escape all special strings
-			var msg = data.message.toString().replace(/"/g, '\\"');
-			log("debug","Submission msg",msg);
-
-			// var process = exec('/bin/python2 /home/pi/scripts/printer/polylogue.py -m "'+msg+'"',
-			// 	{ cwd : '/home/pi/scripts/printer'},
-			// 	function(error, stdout, stderr) {
-			// 		console.log(stdout);	
-			// 		if (error !== null) {
-			//       		console.log(`exec error: ${error}`);
-			//     	}
-			// 	}
-			// );
-		}*/
 	},
 
 	addMessage : function(message, callback) {
@@ -45,11 +33,28 @@ var Submission = {
 				return;
 			}
 
+			//check if message expired
+			if (doc.expired) {
+				callback(new Error("Submission already expired"));
+				return;
+			}
+
 			message.createdAt = new Date();
 			doc.messages.push(message);
-
-
 			db.submissions.update({ _id : message.submissionId}, doc, callback);
+		});
+	},
+
+	setExpired : function(data, callback) {
+		var db = new Database();
+		db.submissions.findOne({ _id : data._id }, (err,doc) => {
+			if (err) {
+				callback(err);
+				return;
+			}
+
+			doc.expired = true;
+			db.submissions.update({ _id : doc._id}, doc, callback);
 		});
 	},
 
@@ -71,6 +76,20 @@ var Submission = {
 				callback(err,docs[0],0);
 			else
 				callback(err,undefined,0);
+
+		});
+	},
+
+	// returns only message that are not expired yet
+	getActive: function(callback) {
+		var db = new Database();
+		var cursor = db.submissions.find({ expired : false });
+		cursor.toArray(function(err,docs) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			callback(err, docs);
 
 		});
 	},

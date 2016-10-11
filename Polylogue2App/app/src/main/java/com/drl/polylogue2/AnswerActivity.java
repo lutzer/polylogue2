@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,15 +13,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.drl.polylogue2.models.Submission;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 public class AnswerActivity extends AppCompatActivity {
 
     public static String LOG_TAG = "MAZI-ANSWER-ACTIVITY: ";
     private Logger Log;
 
-    private String submissionId = "";
+    private Submission submission;
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -43,15 +48,27 @@ public class AnswerActivity extends AppCompatActivity {
         Log = LoggerFactory.getLogger(ForegroundService.class);
         Log.debug(LOG_TAG + "Activity created");
 
-        //set message
-        if (this.getIntent().hasExtra("message")) {
-            String message = this.getIntent().getStringExtra("message");
-            TextView messageView = (TextView) findViewById(R.id.messageView);
-            messageView.setText(message);
-        }
+        initView();
 
-        //set input focus
-        findViewById(R.id.editText).requestFocus();
+    }
+
+    private void initView() {
+        //set message
+        Intent intent = getIntent();
+        if (intent.hasExtra("submission")) {
+            submission = (Submission) intent.getSerializableExtra("submission");
+            Log.debug(LOG_TAG + "New Intent with submission: " + submission.toString());
+
+            TextView messageView = (TextView) findViewById(R.id.messageView);
+            messageView.setText(submission.message);
+
+            //set input focus
+            findViewById(R.id.editText).requestFocus();
+
+            //setup expiration time
+            Date expiresAt = submission.getExpiresAt();
+            startTimer(expiresAt.getTime() - new Date().getTime());
+        }
     }
 
     @Override
@@ -69,11 +86,7 @@ public class AnswerActivity extends AppCompatActivity {
 
         Intent service = new Intent(AnswerActivity.this, ForegroundService.class);
         service.putExtra("message", editText.getText().toString());
-        //set message
-        if (this.getIntent().hasExtra("id")) {
-            String id = this.getIntent().getStringExtra("id");
-            service.putExtra("id", id);
-        }
+        service.putExtra("submissionId", submission._id);
         service.setAction(ForegroundService.ServiceAction.SEND_MESSSAGE);
         startService(service);
     }
@@ -85,5 +98,21 @@ public class AnswerActivity extends AppCompatActivity {
         } else
             Toast.makeText(this, "ERROR: Message could not be sent. Check your internet connection and try again.", Toast.LENGTH_LONG).show();
 
+    }
+
+    private void startTimer(long timeRemaining) {
+
+        final TextView timerText = (TextView) findViewById(R.id.timerView);
+
+        new CountDownTimer(timeRemaining, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                timerText.setText("Question expires in " + millisUntilFinished / 1000 + " seconds.");
+            }
+
+            public void onFinish() {
+                timerText.setText("Question expired");
+            }
+        }.start();
     }
 }

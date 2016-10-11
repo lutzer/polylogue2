@@ -20,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
+import com.drl.polylogue2.models.Submission;
 import com.drl.polylogue2.utils.AlarmReceiver;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -48,28 +50,28 @@ public class ForegroundService extends Service {
     }
 
     private Socket socket;
-    private String lastSubmissionId = null;
+    ArrayList<String> fetchedSubmissions;
 
     private Emitter.Listener onNewSubmission = new Emitter.Listener() {
 
         @Override
         public void call(Object... args) {
 
-            JSONObject json = new JSONObject();
+            Submission submission;
 
             try {
-                json = (JSONObject) args[0];
+                JSONObject json = (JSONObject) args[0];
+                submission = new Submission(json);
             } catch (Exception e) {
                 Log.error(e.getMessage());
                 return;
             }
 
-            Log.info(LOG_TAG + "Received Submission: " + json.toString());
-
-            try {
-                showNotification("Message Received",json.getString("_id"),json.getString("message"));
-            } catch (JSONException e) {
-                Log.error(e.getMessage());
+            // check if message already displayed
+            if (!fetchedSubmissions.contains(submission._id)) {
+                Log.info(LOG_TAG + "Received Submission: " + submission.toString());
+                showNotification("New Polylogue Question", submission);
+                fetchedSubmissions.add(submission._id);
             }
         }
     };
@@ -104,6 +106,8 @@ public class ForegroundService extends Service {
             Log.error(LOG_TAG + e.getMessage());
         }
 
+        fetchedSubmissions = new ArrayList();
+
         Log.info(LOG_TAG + "Service created");
 
         connectWebsocket();
@@ -122,26 +126,26 @@ public class ForegroundService extends Service {
             if (intent.getAction().equals(ServiceAction.SEND_MESSSAGE)) {
 
                 String message = intent.getStringExtra("message");
-                String id = intent.getStringExtra("id");
+                String submissionId = intent.getStringExtra("submissionId");
 
                 // send message to server
-                boolean msgDelivered = sendMessage(id, message);
+                boolean msgDelivered = sendMessage(submissionId, message);
 
                 //answer to activity
                 Intent retIntent = new Intent(DELIVERED_BROADCAST);
                 retIntent.putExtra("msgDelivered", msgDelivered);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(retIntent);
 
-            } else if (intent.getAction().equals(ServiceAction.CONNECT)) {
-
-                if (socket.connected()) {
-                    //answer that socket is connected
-                    Intent retIntent = new Intent(CONNECTED_BROADCAST);
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(retIntent);
-                }
             } else if (intent.getAction().equals(ServiceAction.CHECK_CONNECT)) {
 
                 if (socket.connected()) {
+                    //answer that socket is connected
+                    onSocketConnected.call();
+                }
+
+            } else if (intent.getAction().equals(ServiceAction.CONNECT)) {
+
+                if (!socket.connected()) {
                     connectWebsocket();
                 }
             }
@@ -180,8 +184,8 @@ public class ForegroundService extends Service {
         Intent myAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
         PendingIntent recurringAlarm = PendingIntent.getBroadcast(getApplicationContext(), 0, myAlarm, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarms = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarms.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-        CONNECTION_CHECK_INTERVAL, recurringAlarm);
+        alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                CONNECTION_CHECK_INTERVAL, recurringAlarm);
     }
 
     public boolean sendMessage(String submissionId, String message) {
@@ -211,22 +215,19 @@ public class ForegroundService extends Service {
         }
     }
 
-    private void showNotification(String action, String submissionId, String message) {
+    private void showNotification(String action, Submission submission) {
 
         // do not notify for a submission twice
-        if (lastSubmissionId == submissionId)
-            return;
-        else
-            lastSubmissionId = submissionId;
 
         Log.debug(LOG_TAG + "showing notifiation");
 
         Intent notificationIntent = new Intent(this, AnswerActivity.class);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK); // start new activity
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         notificationIntent.setAction(action);
-        notificationIntent.putExtra("message", message);
-        notificationIntent.putExtra("id",submissionId);
+        notificationIntent.putExtra("submission", submission);
         PendingIntent resultPendingIntent =
-            PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT );
+            PendingIntent.getActivity(this, submission.boxId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -235,14 +236,14 @@ public class ForegroundService extends Service {
             .setSound(notificationSound)
             .setSmallIcon(R.drawable.message)
             .setContentTitle(action)
-            .setContentText(message)
+            .setContentText(submission.message)
             .setContentIntent(resultPendingIntent)
             .setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
-        mNotifyMgr.notify(NOTIFICATION_ID, mBuilder.build());
+        mNotifyMgr.notify(submission.boxId, mBuilder.build());
     }
 
 }

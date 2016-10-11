@@ -19,9 +19,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver
     {
 
         Intent service = new Intent(context, ForegroundService.class);
-        service.setAction(ForegroundService.ServiceAction.CHECK_CONNECT);
+        service.setAction(ForegroundService.ServiceAction.CONNECT);
         context.startService(service);
 
-        Log.d("MAZI", "ALARM receiver calles");
+        Log.d("ALARM-RECEIVER", "called.");
     }
 }

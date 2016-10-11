@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         // start service
         Intent service = new Intent(MainActivity.this, ForegroundService.class);
-        service.setAction(ForegroundService.ServiceAction.CONNECT);
+        service.setAction(ForegroundService.ServiceAction.CHECK_CONNECT);
         startService(service);
 
 
@@ -69,5 +69,12 @@ public class MainActivity extends AppCompatActivity {
     private void onSocketConnected() {
         findViewById(R.id.spinner).setVisibility(View.GONE);
         findViewById(R.id.invisibleLayout).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // finish activty on pause, so answer actvity wont return to it.
+        finish();
     }
 }
