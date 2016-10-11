@@ -33,7 +33,8 @@ import com.github.nkzawa.socketio.client.Socket;
  */
 public class ForegroundService extends Service {
 
-    public static String WEBSOCKET_URL = "http://192.168.1.4:8081";
+    //public static String WEBSOCKET_URL = "http://lu-re.de:8090";
+    public static String WEBSOCKET_URL = "http://192.168.1.5:8090";
     public static int NOTIFICATION_ID = 101;
     public final int CONNECTION_CHECK_INTERVAL = 5000;
 
@@ -210,7 +211,7 @@ public class ForegroundService extends Service {
     public void connectWebsocket() {
 
         if (socket != null && !socket.connected()) {
-            Log.info(LOG_TAG + "Connecting to socket: " + getResources().getString(R.string.websocketUrl));
+            Log.info(LOG_TAG + "Connecting to socket: " + WEBSOCKET_URL);
             socket.connect();
         }
     }

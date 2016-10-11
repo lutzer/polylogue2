@@ -7,7 +7,7 @@ var Config = {
 	baseUrl : '/', // with trailing /
 	servePublicDir : true,
 	hostname : false, // 127.0.0.1 = private, false = public
-	port : '8081',
+	port : '8090',
 
 	submissionExpireTime: 5 * 60 * 1000 //how long is a submission open do discuss
 
