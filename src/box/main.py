@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 16:39:38
+# @Last Modified time: 2016-10-20 19:44:00
 
 from __future__ import with_statement
 import time
@@ -10,14 +10,9 @@ import logging
 import sys
 import pyglet
 
+from config import *
 from comm.keyboardSocketThread import *
 from ui.uiThread import UiThread
-
-KEYBOARD_SOCKET_URL = "localhost"
-KEYBOARD_SOCKET_PORT = 8091
-
-WEBSERVER_SOCKET_URL = ""
-WEBSERVER_SOCKET_PORT = 8090
 
 keyboardSocket = None
 uiThread = None
@@ -38,13 +33,18 @@ def init():
    
    # setup display
    uiThread = UiThread()
+   uiThread.screen.newQuestionEvent += onNewQuestion
+   uiThread.screen.unlockBoxEvent += onBoxUnlocked
    uiThread.start()
    
    logger.info('service initialized, starting loop.')
 
 # check the socketThread if there are any new messages received
 def loop():
+   # after ui thread finishes, stop program
    time.sleep(1)
+   #uiThread.join()
+   #stop()
 
 def stop():
    global keyboardSocket, uiThread
@@ -55,7 +55,14 @@ def stop():
 
 def onKeypress(data):
    global uiThread
-   uiThread.triggerKeypress(data)
+   data['event'] = 'keypress'
+   uiThread.addEvent(data)
+
+def onNewQuestion(question):
+   logger.info('Received new question: '+question)
+
+def onBoxUnlocked():
+   logger.info('Box unlocked')
 
 def sendToPrinter(message):
    logger.info('Printing message:' + message)

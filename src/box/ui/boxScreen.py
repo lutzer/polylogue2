@@ -2,12 +2,15 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 16:57:39
+# @Last Modified time: 2016-10-20 19:45:33
 
 import pyglet
 import sys
 import logging
 import random
+
+from config import *
+from utils.eventHandler import EventHandler
 
 #colors
 BG_COLOR = (244, 223, 66, 255)
@@ -106,8 +109,11 @@ class BoxScreen(pyglet.window.Window):
 	running = True
 	isEditable = True
 
+	newQuestionEvent = EventHandler()
+	unlockBoxEvent = EventHandler()
+
 	def __init__(self):
-		pyglet.window.Window.__init__(self);
+		pyglet.window.Window.__init__(self,fullscreen=RUN_IN_FULLSCREEN);
 
 		# load fonts
 		if pyglet.font.have_font(FONT_FAMILY):
@@ -134,7 +140,7 @@ class BoxScreen(pyglet.window.Window):
 		pyglet.app.run()
 
 	def close(self):
-		pyglet.app.exit()
+		#pyglet.app.exit()
 		self.running = False
 
 	### events
@@ -151,42 +157,55 @@ class BoxScreen(pyglet.window.Window):
 			self.text.caret.on_text(text)
 
 	def on_text_motion(self,motion):
-		if text.document.isEditable:
-			self.text.caret.on_text_motion(motion)
+		self.text.caret.on_text_motion(motion)
 
 	def focus_caret(self):
 		self.text.caret.position = len(self.text.document.text)
 
+	def on_key_press(self, symbol, modifiers):
+		if symbol == pyglet.window.key.ESCAPE:
+			self.close()
+
 	### properties
 	
-	def triggerKeypress(self,data):
-		if not self.isEditable:
-			return
-		if data['key'] == '\r':
-			self.sendQuestion()
-		elif data['type'] == 'text':
-			self.dispatch_event('on_text',data['key'])
-		else:
-			self.dispatch_event('on_text_motion',data['key'])
+	def triggerEvent(self,data):
+		logger.debug('received event: ' + data['event'])
+		# handle key events
+		if data['event'] == 'keypress':
+			if not self.isEditable:
+				return
+			if data['key'] == '\r':
+				self.lockBox()
+			elif data['type'] == 'text':
+				self.dispatch_event('on_text',data['key'])
+			else:
+				self.dispatch_event('on_text_motion',data['key'])
+		elif data['event'] == 'unlock':
+			self.unlockBox()
 	
 	### methods
 	
-	def sendQuestion(self):
+	def lockBox(self):
 		question = self.getText()
 		self.isEditable = False
+		self.progressBar.setProgress(1)
+		self.newQuestionEvent.emit(question)
 
-		# start progress bar
+		#start progress bar
 		self.progressBar.setProgress(1)
 		def updateProgress(dt):
 			self.progressBar.setProgress(self.progressBar.progress - 0.1)
 			if self.progressBar.progress > 0:
 				pyglet.clock.schedule_once(updateProgress, 1)
 			else:
-				self.isEditable = True
-				self.setText('')
+				self.unlockBox()
 		updateProgress(0) #start animation
 
-		
+	def unlockBox(self):
+		self.isEditable = True
+		self.setText('')
+		self.progressBar.setProgress(0)
+		self.unlockBoxEvent.emit()
 
 	def getText(self):
 		return self.text.document.text

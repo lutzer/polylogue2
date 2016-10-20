@@ -2,10 +2,10 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:21:32
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-19 23:55:39
+# @Last Modified time: 2016-10-20 17:45:09
 
 from __future__ import with_statement
-from socketIO_client import SocketIO
+from socketIO_client import SocketIO,LoggingNamespace
 from threading import Thread
 from utils.eventHandler import EventHandler
 import logging

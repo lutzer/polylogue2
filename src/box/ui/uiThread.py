@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 17:42:58
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 16:04:27
+# @Last Modified time: 2016-10-20 17:46:57
 
 from threading import Thread,Lock
 import logging
@@ -23,6 +23,7 @@ class UiThread(Thread):
 		Thread.__init__(self)
 		self.screen = BoxScreen()
 
+		# event queue
 		self.queue = []
 		self.queueLock = Lock()
 
@@ -38,11 +39,11 @@ class UiThread(Thread):
 		pyglet.clock.tick()
 		self.screen.switch_to()
 
-		# read keypresses
+		# handle events
 		for data in self.queue:
-			self.screen.triggerKeypress(data)
+			self.screen.triggerEvent(data)
 
-		# delete queue
+		# delete event queue
 		with self.queueLock:
 			self.queue[:] = []
 
@@ -53,6 +54,7 @@ class UiThread(Thread):
 	def stop(self):
 		self.screen.close()
 
-	def triggerKeypress(self,data):
+	# saves events to handle in ui thread
+	def addEvent(self,data):
 		with self.queueLock:
 			self.queue.append(data)
