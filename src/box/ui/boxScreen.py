@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 16:10:04
+# @Last Modified time: 2016-10-20 16:57:39
 
 import pyglet
 import sys
@@ -65,35 +65,36 @@ class ProgressBar(object):
 
 
 class Console(object):
-    def __init__(self, text, x, y, width, height, batch):
 
-    	# load font
-    	font = pyglet.font.load(FONT_FAMILY, FONT_SIZE)
+	def __init__(self, text, x, y, width, height, batch):
 
-        self.document = pyglet.text.document.FormattedDocument(text)
-        self.document.set_style(0, TEXT_LENGTH, dict(
-        	font_name= FONT_FAMILY, 
-        	font_size=FONT_SIZE)
-        )
-        self.document.set_paragraph_style(0, TEXT_LENGTH, dict(
-        	line_spacing=str(LINE_SPACING)+"pt",
-        	wrap=True,
-        	indent=TEXT_INDENT
-        ))
+		# load font
+		font = pyglet.font.load(FONT_FAMILY, FONT_SIZE)
 
-        # draw text box
-        self.layout = pyglet.text.layout.IncrementalTextLayout(
-            self.document, width, height, multiline=True, batch=batch)
-        self.layout.x = x
-        self.layout.y = y
+		self.document = pyglet.text.document.FormattedDocument(text)
+		self.document.set_style(0, TEXT_LENGTH, dict(
+			font_name= FONT_FAMILY, 
+			font_size=FONT_SIZE)
+		)
+		self.document.set_paragraph_style(0, TEXT_LENGTH, dict(
+			line_spacing=str(LINE_SPACING)+"pt",
+			wrap=True,
+			indent=TEXT_INDENT
+			))
 
-        # draw prompt
-        self.prompt = pyglet.text.Label(TEXT_PROMPT, x = x, y = y + height - LINE_SPACING,
-        	font_name=FONT_FAMILY, font_size=FONT_SIZE, color=PROMPT_COLOR, anchor_y='center',
-        	batch=batch )
+		# draw text box
+		self.layout = pyglet.text.layout.IncrementalTextLayout(
+			self.document, width, height, multiline=True, batch=batch)
+		self.layout.x = x
+		self.layout.y = y
 
-        # add cursor
-        self.caret = pyglet.text.caret.Caret(self.layout)
+		# draw prompt
+		self.prompt = pyglet.text.Label(TEXT_PROMPT, x = x, y = y + height - LINE_SPACING,
+			font_name=FONT_FAMILY, font_size=FONT_SIZE, color=PROMPT_COLOR, anchor_y='center',
+			batch=batch )
+
+		# add cursor
+		self.caret = pyglet.text.caret.Caret(self.layout)
 
 class BoxScreen(pyglet.window.Window):
 
@@ -101,7 +102,9 @@ class BoxScreen(pyglet.window.Window):
 	progressBar = None
 	textBatch = pyglet.graphics.Batch()
 	barBatch = pyglet.graphics.Batch()
+
 	running = True
+	isEditable = True
 
 	def __init__(self):
 		pyglet.window.Window.__init__(self);
@@ -119,8 +122,12 @@ class BoxScreen(pyglet.window.Window):
 		self.progressBar = ProgressBar("Test", PADDING, PADDING, 
 			width = self.width - 2*PADDING, height = BAR_HEIGHT, batch=self.barBatch)
 		self.progressBar.setProgress(0)
+
 		# focus on text
 		self.focus_caret()
+
+		# clear text
+		self.text.document.text = ''
 
 
 	def open(self):
@@ -144,7 +151,8 @@ class BoxScreen(pyglet.window.Window):
 			self.text.caret.on_text(text)
 
 	def on_text_motion(self,motion):
-		self.text.caret.on_text_motion(motion)
+		if text.document.isEditable:
+			self.text.caret.on_text_motion(motion)
 
 	def focus_caret(self):
 		self.text.caret.position = len(self.text.document.text)
@@ -152,22 +160,40 @@ class BoxScreen(pyglet.window.Window):
 	### properties
 	
 	def triggerKeypress(self,data):
-		if data['type'] == 'text':
+		if not self.isEditable:
+			return
+		if data['key'] == '\r':
+			self.sendQuestion()
+		elif data['type'] == 'text':
 			self.dispatch_event('on_text',data['key'])
 		else:
 			self.dispatch_event('on_text_motion',data['key'])
 	
+	### methods
+	
+	def sendQuestion(self):
+		question = self.getText()
+		self.isEditable = False
+
+		# start progress bar
+		self.progressBar.setProgress(1)
+		def updateProgress(dt):
+			self.progressBar.setProgress(self.progressBar.progress - 0.1)
+			if self.progressBar.progress > 0:
+				pyglet.clock.schedule_once(updateProgress, 1)
+			else:
+				self.isEditable = True
+				self.setText('')
+		updateProgress(0) #start animation
+
+		
+
 	def getText(self):
 		return self.text.document.text
 
 	def setText(self,text):
 		self.text.document.text = text
 
-	def getProgress(self):
-		return self.progressBar.progress
-
-	def setProgress(self,progress):
-		self.progressBar.setProgress(progress)
 
 def allowed_char(c):
     return (ord(c) < 128 and ord(c) > 31)

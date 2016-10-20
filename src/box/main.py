@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 16:02:17
+# @Last Modified time: 2016-10-20 16:39:38
 
 from __future__ import with_statement
 import time
@@ -47,8 +47,8 @@ def loop():
    time.sleep(1)
 
 def stop():
-   logger.info('stopping main application')
    global keyboardSocket, uiThread
+
    uiThread.stop();
    keyboardSocket.stop();
    sys.exit()
@@ -59,9 +59,6 @@ def onKeypress(data):
 
 def sendToPrinter(message):
    logger.info('Printing message:' + message)
-
-def receivedQuestion(question):
-	logger.info('Received question:' + question)
 
 # start main loop
 init()
