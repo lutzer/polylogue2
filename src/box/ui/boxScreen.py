@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 11:25:42
+# @Last Modified time: 2016-10-20 16:10:04
 
 import pyglet
 import sys
@@ -18,7 +18,7 @@ PROMPT_COLOR = (61,61,61,255)
 FONT_FAMILY = "Perfect DOS VGA 437"
 FONT_SIZE = 24
 LINE_SPACING = 36
-TEXT_LENGTH = 500
+TEXT_LENGTH = 140
 TEXT_INDENT = "75px"
 TEXT_PROMPT = "pl>"
 
@@ -67,6 +67,9 @@ class ProgressBar(object):
 class Console(object):
     def __init__(self, text, x, y, width, height, batch):
 
+    	# load font
+    	font = pyglet.font.load(FONT_FAMILY, FONT_SIZE)
+
         self.document = pyglet.text.document.FormattedDocument(text)
         self.document.set_style(0, TEXT_LENGTH, dict(
         	font_name= FONT_FAMILY, 
@@ -109,7 +112,7 @@ class BoxScreen(pyglet.window.Window):
 
 		# display text
 		self.textBatch = pyglet.graphics.Batch()
-		self.text = Console(list_allowed_chars(), PADDING, PADDING + BAR_HEIGHT, width=self.width - 2*PADDING, 
+		self.text = Console(' ', PADDING, PADDING + BAR_HEIGHT, width=self.width - 2*PADDING, 
 			height=self.height - 2*PADDING - BAR_HEIGHT, batch=self.textBatch)
 		
 		# display progress bar
@@ -122,12 +125,13 @@ class BoxScreen(pyglet.window.Window):
 
 	def open(self):
 		pyglet.app.run()
-		self.text.document.text = " "
 
 	def close(self):
 		pyglet.app.exit()
 		self.running = False
 
+	### events
+	
 	def on_draw(self):
 		self.clear()
 		pyglet.gl.glClearColor(BG_COLOR[0]/255.0,BG_COLOR[1]/255.0,BG_COLOR[2]/255.0,BG_COLOR[3]/255.0)
@@ -135,18 +139,23 @@ class BoxScreen(pyglet.window.Window):
 		self.textBatch.draw()
 		self.barBatch.draw()
 
+	def on_text(self,text):
+		if allowed_char(text) and len(self.text.document.text) < TEXT_LENGTH:
+			self.text.caret.on_text(text)
+
+	def on_text_motion(self,motion):
+		self.text.caret.on_text_motion(motion)
+
 	def focus_caret(self):
 		self.text.caret.position = len(self.text.document.text)
 
-	def write(self, char):
-		if allowed_char(char) and len(self.text.document.text) < TEXT_LENGTH:
-			self.text.document.text += char
-			#self.text.caret.on_text(char)
-
-	def moveCursor(self,motion):
-		self.text.caret.on_text_motion(motion)
-
 	### properties
+	
+	def triggerKeypress(self,data):
+		if data['type'] == 'text':
+			self.dispatch_event('on_text',data['key'])
+		else:
+			self.dispatch_event('on_text_motion',data['key'])
 	
 	def getText(self):
 		return self.text.document.text
@@ -162,11 +171,4 @@ class BoxScreen(pyglet.window.Window):
 
 def allowed_char(c):
     return (ord(c) < 128 and ord(c) > 31)
-
-def list_allowed_chars():
-	string = ""
-	for i in range(0,256):
-		if allowed_char(unichr(i)):
-			string += unichr(i)
-	return string
 

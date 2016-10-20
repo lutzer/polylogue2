@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 10:03:40
+# @Last Modified time: 2016-10-20 16:02:17
 
 from __future__ import with_statement
 import time
@@ -55,13 +55,7 @@ def stop():
 
 def onKeypress(data):
    global uiThread
-
-   if data['key'] == "\r":
-       print "return pressed"
-   elif data['type'] == 'motion':
-      uiThread.screen.moveCursor(data['key'])
-   else:
-      uiThread.screen.write(data['key'])
+   uiThread.triggerKeypress(data)
 
 def sendToPrinter(message):
    logger.info('Printing message:' + message)
