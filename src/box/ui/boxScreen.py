@@ -160,6 +160,7 @@ class BoxScreen(pyglet.window.Window):
 			self.text.caret.on_text(text)
 
 	def on_text_motion(self,motion):
+                logger.debug(motion)
 		self.text.caret.on_text_motion(motion)
 
 	def focus_caret(self):
@@ -180,7 +181,7 @@ class BoxScreen(pyglet.window.Window):
 			if data['key'] == '\r':
 				self.lockBox()
 			elif data['type'] == 'text':
-				self.dispatch_event('on_text',data['key'])
+				self.dispatch_event('on_text',chr(data['key']))
 			else:
 				self.dispatch_event('on_text_motion',data['key'])
 		elif data['event'] == 'unlock':
