@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 23:17:00
+# @Last Modified time: 2016-10-20 23:28:09
 
 import pyglet
 import sys
@@ -32,6 +32,7 @@ STROKE_WIDTH = 3
 
 # layout params
 PADDING = 20
+MARGIN = "5px"
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,8 @@ class Console(object):
 			line_spacing=str(LINE_SPACING)+"pt",
 			wrap=True,
 			indent=TEXT_INDENT,
-			margin_left=50px)
+			margin_left=MARGIN,
+			margin_right=MARGIN)
 		)
 
 		# draw text box
