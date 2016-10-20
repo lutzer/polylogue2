@@ -22,7 +22,7 @@ FONT_FAMILY = "Perfect DOS VGA 437"
 FONT_SIZE = 24
 LINE_SPACING = 36
 TEXT_LENGTH = 140
-TEXT_INDENT = "75px"
+TEXT_INDENT = "70px"
 TEXT_PROMPT = "pl>"
 
 # progress bar params
@@ -32,7 +32,7 @@ STROKE_WIDTH = 3
 
 # layout params
 PADDING = 20
-MARGIN = "5px"
+MARGIN = 10
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class Console(object):
 		self.layout.y = y
 
 		# draw prompt
-		self.prompt = pyglet.text.Label(TEXT_PROMPT, x = x, y = y + height - LINE_SPACING,
+		self.prompt = pyglet.text.Label(TEXT_PROMPT, x = x+MARGIN, y = y + height - LINE_SPACING,
 			font_name=FONT_FAMILY, font_size=FONT_SIZE, color=PROMPT_COLOR, anchor_y='center',
 			batch=batch )
 
