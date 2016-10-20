@@ -16,26 +16,19 @@ An interactive installation for biennale 2016
 ## PI Installation
 
 * install RASPBIAN JESSIE WITH PIXEL
-
 * standard login: **pi/raspberry**
-
 * change password: `passwd`
-
-* create new user: `sudo adduser poly`
-
-  * set sudo permissions `sudo visudo` 
-  * add line `poly ALL=(ALL:ALL) ALL`
-
 * change config: `sudo raspi-config`
-
+  * change keyboard layout
+  * change to login with user pi at startup
 * setup wlan
-
   * ​
-
 * pull repo: `git clone https://github.com/lutzer/polylogue2.git`
-
 * python packages
-
   * `sudo pip2 install pyglet && sudo pip2 install socketio-client `
-
-  ​
+* copy configs: `cp src/box/config.default.py config.py`
+* for boxes:
+  * autostart script afterdesktop loads, change file: `sudo nano ~/.config/lxsession/LXDE-pi/autostart `
+  * add line: `@/usr/bin/python2 /home/pi/polylogue2/src/box/main.py`
+  * disable power off screen: edit `sudo nano /etc/kbd/config` set `BLANK_TIME=0`
+  * install font: copy perfect dos font to **/usr/share/fonts**

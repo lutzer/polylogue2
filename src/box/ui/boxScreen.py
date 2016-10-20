@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 19:45:33
+# @Last Modified time: 2016-10-20 23:17:00
 
 import pyglet
 import sys
@@ -82,8 +82,9 @@ class Console(object):
 		self.document.set_paragraph_style(0, TEXT_LENGTH, dict(
 			line_spacing=str(LINE_SPACING)+"pt",
 			wrap=True,
-			indent=TEXT_INDENT
-			))
+			indent=TEXT_INDENT,
+			margin_left=50px)
+		)
 
 		# draw text box
 		self.layout = pyglet.text.layout.IncrementalTextLayout(
