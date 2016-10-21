@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 23:28:09
+# @Last Modified time: 2016-10-21 02:20:40
 
 import pyglet
 import sys
@@ -160,7 +160,6 @@ class BoxScreen(pyglet.window.Window):
 			self.text.caret.on_text(text)
 
 	def on_text_motion(self,motion):
-                logger.debug(motion)
 		self.text.caret.on_text_motion(motion)
 
 	def focus_caret(self):
@@ -178,7 +177,7 @@ class BoxScreen(pyglet.window.Window):
 		if data['event'] == 'keypress':
 			if not self.isEditable:
 				return
-			if data['key'] == '\r':
+			if data['key'] == ord('\r'):
 				self.lockBox()
 			elif data['type'] == 'text':
 				self.dispatch_event('on_text',chr(data['key']))

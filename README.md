@@ -22,7 +22,7 @@ An interactive installation for biennale 2016
   * change keyboard layout
   * change to login with user pi at startup
 * setup wlan
-  * ​
+  * connect to polylogue2 wifi and setup static ip address 
 * pull repo: `git clone https://github.com/lutzer/polylogue2.git`
 * python packages
   * `sudo pip2 install pyglet && sudo pip2 install socketio-client `
