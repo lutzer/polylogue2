@@ -38,7 +38,7 @@ module.exports = function (http) {
 			nsp_phone.emit('question:expired',data);
 			questions.setExpired(data, (err) => {
 				if (err) { 
-					log("error", "Error handling <submission:expired>: ", err);
+					log("error", "Error handling <question:expired>: ", err);
 					return;
 				}
 			});
@@ -74,7 +74,7 @@ module.exports = function (http) {
 	    
         questions.getActive( (err, docs) => {
             if (err) {
-            	log("error","Fetching active submission: ", err)
+            	log("error","Fetching active questions: ", err)
             	return;
             }
             _.each(docs, function(doc) {

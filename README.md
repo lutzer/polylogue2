@@ -58,11 +58,13 @@ An interactive installation for biennale 2016
   * add package source for node: `curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -`
   * install npm and node:  `sudo apt-get install nodejs`
   * install pm2: `npm install -g pm2`
+  * install dependencies, go to dir **src/keyboard/socket**, type: `npm install`
   * setup pm2
-    * `sudo pm2 startup systemd -u <username>`
+    * `sudo pm2 startup systemd -u pi`
     * `pm2 start src/keyboard/socket/main.js --name keyboardSocketServer`
     * `pm2 save`
   * autostart keyboard grabber:
+    * `/usb/bin/python2 /home/pi/polylogue2/src/keyboard/keygrabber/main.py`
 
 
 
