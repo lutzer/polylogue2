@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-21 02:20:40
+# @Last Modified time: 2016-10-21 14:59:30
 
 import pyglet
 import sys
@@ -66,6 +66,14 @@ class ProgressBar(object):
 		self.bar.vertex_list.vertices[2] = int(self.x + self.width * self.progress);
 		self.bar.vertex_list.vertices[4] = int(self.x + self.width * self.progress);
 
+class Dialog(object):
+
+	visible = False
+
+	def __init__(self, x1, y1, x2, y2, batch):
+
+		self.box = Rectangle(x, y, 
+           x + width, y + height, batch, True)
 
 
 class Console(object):
@@ -105,14 +113,15 @@ class Console(object):
 class BoxScreen(pyglet.window.Window):
 
 	text = None
-	progressBar = None
 	textBatch = pyglet.graphics.Batch()
+	
+	progressBar = None
 	barBatch = pyglet.graphics.Batch()
 
 	running = True
 	isEditable = True
 
-	newQuestionEvent = EventHandler()
+	lockBoxEvent = EventHandler()
 	unlockBoxEvent = EventHandler()
 
 	def __init__(self):
@@ -197,22 +206,28 @@ class BoxScreen(pyglet.window.Window):
 		question = self.getText()
 		self.isEditable = False
 		self.progressBar.setProgress(1)
-		self.newQuestionEvent.emit(question)
+		self.lockBoxEvent.emit(question)
+		self.text.caret.visible = False
 
 		#start progress bar
 		self.progressBar.setProgress(1)
-		def updateProgress(dt):
-			self.progressBar.setProgress(self.progressBar.progress - 0.1)
-			if self.progressBar.progress > 0:
-				pyglet.clock.schedule_once(updateProgress, 1)
+
+		# start timer
+		def updateProgress(dt,timeout):
+			self.progressBar.setProgress(float(timeout)/QUESTION_DURATION)
+			if timeout > 0:
+				timeout -= dt * 1000
+				pyglet.clock.schedule_once(updateProgress, 1, timeout)
 			else:
 				self.unlockBox()
-		updateProgress(0) #start animation
+
+		updateProgress(1,QUESTION_DURATION) #start timeout
 
 	def unlockBox(self):
 		self.isEditable = True
 		self.setText('')
 		self.progressBar.setProgress(0)
+		self.text.caret.visible = True
 		self.unlockBoxEvent.emit()
 
 	def getText(self):

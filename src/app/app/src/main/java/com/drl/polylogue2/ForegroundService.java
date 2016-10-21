@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import com.drl.polylogue2.models.Submission;
+import com.drl.polylogue2.models.Question;
 import com.drl.polylogue2.utils.AlarmReceiver;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -34,8 +34,7 @@ import com.github.nkzawa.socketio.client.Socket;
 public class ForegroundService extends Service {
 
     //public static String WEBSOCKET_URL = "http://lu-re.de:8090";
-    public static String WEBSOCKET_URL = "http://192.168.1.5:8090";
-    public static int NOTIFICATION_ID = 101;
+    public static String WEBSOCKET_URL = "http://192.168.72.100:8090/phone";
     public final int CONNECTION_CHECK_INTERVAL = 5000;
 
     public static String DELIVERED_BROADCAST = "delivered-broadcast";
@@ -53,26 +52,26 @@ public class ForegroundService extends Service {
     private Socket socket;
     ArrayList<String> fetchedSubmissions;
 
-    private Emitter.Listener onNewSubmission = new Emitter.Listener() {
+    private Emitter.Listener onNewQuestion = new Emitter.Listener() {
 
         @Override
         public void call(Object... args) {
 
-            Submission submission;
+            Question question;
 
             try {
                 JSONObject json = (JSONObject) args[0];
-                submission = new Submission(json);
+                question = new Question(json);
             } catch (Exception e) {
                 Log.error(e.getMessage());
                 return;
             }
 
             // check if message already displayed
-            if (!fetchedSubmissions.contains(submission._id)) {
-                Log.info(LOG_TAG + "Received Submission: " + submission.toString());
-                showNotification("New Polylogue Question", submission);
-                fetchedSubmissions.add(submission._id);
+            if (!fetchedSubmissions.contains(question._id)) {
+                Log.info(LOG_TAG + "Received Question: " + question.toString());
+                showNotification("New Polylogue Question", question);
+                fetchedSubmissions.add(question._id);
             }
         }
     };
@@ -100,7 +99,7 @@ public class ForegroundService extends Service {
 
         try {
             socket = IO.socket(WEBSOCKET_URL);
-            socket.on("submission:new",onNewSubmission);
+            socket.on("question:new",onNewQuestion);
             socket.on("connected", onSocketConnected);
 
         } catch (URISyntaxException e) {
@@ -126,11 +125,11 @@ public class ForegroundService extends Service {
 
             if (intent.getAction().equals(ServiceAction.SEND_MESSSAGE)) {
 
-                String message = intent.getStringExtra("message");
-                String submissionId = intent.getStringExtra("submissionId");
+                String question = intent.getStringExtra("message");
+                String questionId = intent.getStringExtra("questionId");
 
                 // send message to server
-                boolean msgDelivered = sendMessage(submissionId, message);
+                boolean msgDelivered = sendMessage(questionId, question);
 
                 //answer to activity
                 Intent retIntent = new Intent(DELIVERED_BROADCAST);
@@ -163,7 +162,7 @@ public class ForegroundService extends Service {
 
         if (socket != null && socket.connected()) {
             socket.disconnect();
-            socket.off("submission:new", onNewSubmission);
+            socket.off("question:new", onNewQuestion);
             socket.off("connected", onSocketConnected);
         }
 
@@ -189,12 +188,12 @@ public class ForegroundService extends Service {
                 CONNECTION_CHECK_INTERVAL, recurringAlarm);
     }
 
-    public boolean sendMessage(String submissionId, String message) {
+    public boolean sendMessage(String questionId, String message) {
 
         JSONObject json = new JSONObject();
 
         try {
-            json.put("submissionId", submissionId);
+            json.put("questionId", questionId);
             json.put("message", message);
         } catch (JSONException e) {
             Log.error(e.getMessage());
@@ -216,7 +215,7 @@ public class ForegroundService extends Service {
         }
     }
 
-    private void showNotification(String action, Submission submission) {
+    private void showNotification(String action, Question question) {
 
         // do not notify for a submission twice
 
@@ -226,9 +225,9 @@ public class ForegroundService extends Service {
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK); // start new activity
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         notificationIntent.setAction(action);
-        notificationIntent.putExtra("submission", submission);
+        notificationIntent.putExtra("question", question);
         PendingIntent resultPendingIntent =
-            PendingIntent.getActivity(this, submission.boxId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent.getActivity(this, question.boxId, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -237,14 +236,14 @@ public class ForegroundService extends Service {
             .setSound(notificationSound)
             .setSmallIcon(R.drawable.message)
             .setContentTitle(action)
-            .setContentText(submission.message)
+            .setContentText(question.question)
             .setContentIntent(resultPendingIntent)
             .setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
-        mNotifyMgr.notify(submission.boxId, mBuilder.build());
+        mNotifyMgr.notify(question.boxId, mBuilder.build());
     }
 
 }

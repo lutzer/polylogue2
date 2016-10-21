@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-20 23:45:27
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-21 02:26:26
+# @Last Modified time: 2016-10-21 15:01:44
 
 import curses
 import logging
@@ -52,8 +52,11 @@ def stop():
 def loop():
 	global stdscr, running, socket
 
-	c = stdscr.getch()
-	# output key press
+	try:
+		# get key
+		c = stdscr.getch()
+	except Exception:
+		c = 0
 
 	if c == 27: # escape key, quit program
 		running = False

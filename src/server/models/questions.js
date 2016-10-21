@@ -5,29 +5,36 @@ var Database = r_require('/models/database');
 var config = r_require('/config');
 var utils = r_require('/utils/utils');
 
-var Submission = {
+var Question = {
 
 	create : function(data,callback) {
 		var db = new Database();
+
+		if (!_.has(data,'boxId'))
+			data.boxId = -1;
+
+		if (!_.has(data,'question'))
+			data.question = "undefined";
+
+		if (!_.has(data,'duration'))
+			data.duration = 60 * 3000; //standard time three minutes
 
 		//add timestamp
 		data.createdAt = new Date();
 		//add message array
 		data.messages = [];
 
+
 		//set expire time
 		data.expired = false;
-		data.expiresAt = new Date(Date.now() + config.submissionExpireTime).toJSON();
+		data.expiresAt = new Date(Date.now() + data.duration).toJSON();
 
-		if (!_.has(data,'boxId'))
-			data.boxId = -1;
-
-		db.submissions.insert(data,callback)
+		db.questions.insert(data,callback)
 	},
 
 	addMessage : function(message, callback) {
 		var db = new Database();
-		db.submissions.findOne({ _id : message.submissionId }, (err,doc) => {
+		db.questions.findOne({ _id : message.questionId }, (err,doc) => {
 			if (err) {
 				callback(err);
 				return;
@@ -35,38 +42,37 @@ var Submission = {
 
 			//check if message expired
 			if (doc.expired) {
-				callback(new Error("Submission already expired"));
+				callback(new Error("Question already expired"));
 				return;
 			}
 
 			message.createdAt = new Date();
 			doc.messages.push(message);
-			db.submissions.update({ _id : message.submissionId}, doc, callback);
+			db.questions.update({ _id : message.questionId}, doc, (err) => {
+				if (err) {
+					callback(err);
+					return;
+				}
+				callback(null,doc);
+			});
 		});
 	},
 
-	setExpired : function(data, callback) {
+	setExpired : function(query, callback) {
 		var db = new Database();
-		db.submissions.findOne({ _id : data._id }, (err,doc) => {
-			if (err) {
-				callback(err);
-				return;
-			}
 
-			doc.expired = true;
-			db.submissions.update({ _id : doc._id}, doc, callback);
-		});
+		db.questions.update(query, {$set: {expired: true}}, {multi: true}, callback)
 	},
 
 	get : function(id,callback) {
 
 		var db = new Database();
-		db.submissions.findOne({ _id : id }, callback);
+		db.questions.findOne({ _id : id }, callback);
 	},
 
 	getLast: function(callback) {
 		var db = new Database();
-		var cursor = db.submissions.find({}).limit(1).sort( { createdAt : -1 } )
+		var cursor = db.questions.find({}).limit(1).sort( { createdAt : -1 } )
 		cursor.toArray(function(err,docs) {
 			if (err) {
 				callback(err);
@@ -83,7 +89,7 @@ var Submission = {
 	// returns only message that are not expired yet
 	getActive: function(callback) {
 		var db = new Database();
-		var cursor = db.submissions.find({ expired : false });
+		var cursor = db.questions.find({ expired : false });
 		cursor.toArray(function(err,docs) {
 			if (err) {
 				callback(err);
@@ -97,7 +103,7 @@ var Submission = {
 	list : function(options,callback) {
 
 		var db = new Database();
-		db.submissions.find({}, function(err, cursor) {
+		db.questions.find({}, function(err, cursor) {
 			
 			if (err) {
 				callback(err);
@@ -121,15 +127,15 @@ var Submission = {
 
 	count : function(callback) {
 		var db = new Database();
-		db.submissions.find({}).count(callback);
+		db.questions.find({}).count(callback);
 	},
 
 	remove : function(id,callback) {
 		var db = new Database();
-		db.submissions.remove({_id: id},callback);
+		db.questions.remove({_id: id},callback);
 	},
 
 
 }
 
-module.exports = Submission;
+module.exports = Question;

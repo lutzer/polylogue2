@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-10-19 23:24:23
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-10-19 23:31:09
+* @Last Modified time: 2016-10-21 09:19:21
 */
 
 'use strict';
@@ -38,5 +38,5 @@ var sockets = r_require('/sockets.js')(http);
 
 /* Run the server */
 http.listen(config.port,config.hostname,function(){
-    log("info","Node Server listening on "+config.hostname+":"+config.port);
+    log("info","Polylogue Keyboard-Server listening on "+config.hostname+":"+config.port);
 });

@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-01-25 11:08:47
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-09-28 14:47:54
+* @Last Modified time: 2016-10-21 09:40:26
 */
 
 /* use absolute paths for require */
@@ -33,7 +33,6 @@ var http = require('http').Server(app);
 var config = r_require('/config.js');
 
 /* Load Sockets */
-
 var sockets = r_require('/sockets')(http);
 
 /* Load Router */
@@ -47,5 +46,5 @@ app.use(function(err, req, res, next) {
 /* Run the server */
 
 http.listen(config.port,config.hostname,function(){
-    log("info","Node Server listening on "+config.hostname+":"+config.port);
+    log("info","Polylogue2 Web-Server listening on "+config.hostname+":"+config.port);
 });

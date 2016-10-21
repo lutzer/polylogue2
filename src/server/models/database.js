@@ -6,11 +6,11 @@ var config = r_require('/config');
 var Database = function() {
 	//saves the data
 	var db = new Tingodb.Db(config.databaseFile, {});
-	this.submissions = db.collection("submissions.db");
+	this.questions = db.collection("questions.db");
 }
 
-Database.prototype.submissions = function() {
-	return this.submissions;
+Database.prototype.questions = function() {
+	return this.questions;
 };
 
 module.exports = Database;

@@ -21,7 +21,7 @@ module.exports = function (app) {
     /*if (config.servePublicDir)
 	   app.use(config.baseUrl,express.static('public',options));*/
 
-    app.use(config.baseUrl+'api/submissions', bodyParser.json());
-    app.use(config.baseUrl+'api/submissions', bodyParser.urlencoded({ extended: true }));
-    app.use(config.baseUrl+'api/submissions', require('./submissions'));
+    app.use(config.baseUrl+'api/questions', bodyParser.json());
+    app.use(config.baseUrl+'api/questions', bodyParser.urlencoded({ extended: true }));
+    app.use(config.baseUrl+'api/questions', require('./questions'));
 };

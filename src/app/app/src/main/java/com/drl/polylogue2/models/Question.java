@@ -15,21 +15,21 @@ import java.util.TimeZone;
 /**
  * Created by lutz on 10/10/16.
  */
-public class Submission implements Serializable {
+public class Question implements Serializable {
 
-    public String message = "";
+    public String question = "";
     public String createdAt = "";
     public boolean expired = false;
     public String expiresAt = "";
     public int boxId = -1;
     public String _id = null;
 
-    private static String LOG_TAG = "SUBMISSION_MODEL: ";
+    private static String LOG_TAG = "QUESTION_MODEL: ";
 
-    public Submission(JSONObject json) {
+    public Question(JSONObject json) {
 
         try {
-            message = json.getString("message");
+            question = json.getString("question");
             createdAt = json.getString("createdAt");
             expired = Boolean.parseBoolean(json.getString("expired"));
             expiresAt = json.getString("expiresAt");
@@ -49,7 +49,7 @@ public class Submission implements Serializable {
     @Override
     public String toString() {
         return  "\n_id:" + _id +
-                "\nMessage:" + message +
+                "\nQuestion:" + question +
                 "\ncreatedAt:" + createdAt +
                 "\nexpired:" + expired +
                 "\nexpiresAt:" + expiresAt +

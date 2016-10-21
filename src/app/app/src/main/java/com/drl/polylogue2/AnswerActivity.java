@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.drl.polylogue2.models.Submission;
+import com.drl.polylogue2.models.Question;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class AnswerActivity extends AppCompatActivity {
     public static String LOG_TAG = "MAZI-ANSWER-ACTIVITY: ";
     private Logger Log;
 
-    private Submission submission;
+    private Question question;
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -55,18 +55,18 @@ public class AnswerActivity extends AppCompatActivity {
     private void initView() {
         //set message
         Intent intent = getIntent();
-        if (intent.hasExtra("submission")) {
-            submission = (Submission) intent.getSerializableExtra("submission");
-            Log.debug(LOG_TAG + "New Intent with submission: " + submission.toString());
+        if (intent.hasExtra("question")) {
+            question = (Question) intent.getSerializableExtra("question");
+            Log.debug(LOG_TAG + "New Intent with question: " + question.toString());
 
             TextView messageView = (TextView) findViewById(R.id.messageView);
-            messageView.setText(submission.message);
+            messageView.setText(question.question);
 
             //set input focus
             findViewById(R.id.editText).requestFocus();
 
             //setup expiration time
-            Date expiresAt = submission.getExpiresAt();
+            Date expiresAt = question.getExpiresAt();
             startTimer(expiresAt.getTime() - new Date().getTime());
         }
     }
@@ -86,7 +86,7 @@ public class AnswerActivity extends AppCompatActivity {
 
         Intent service = new Intent(AnswerActivity.this, ForegroundService.class);
         service.putExtra("message", editText.getText().toString());
-        service.putExtra("submissionId", submission._id);
+        service.putExtra("questionId", question._id);
         service.setAction(ForegroundService.ServiceAction.SEND_MESSSAGE);
         startService(service);
     }
