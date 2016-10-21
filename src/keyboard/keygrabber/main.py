@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-20 23:45:27
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-21 02:19:29
+# @Last Modified time: 2016-10-21 02:26:26
 
 import curses
 import logging
@@ -65,10 +65,10 @@ def loop():
 		onKeypress(65362,motion=True)
 	elif c == curses.KEY_DOWN:
 		onKeypress(65364,motion=True)
-	elif c == curses.KEY_ENTER: # enter key
-		onKeypress(ord('\r'))
 	elif c == 127 or c == 330: # escape key
 		onKeypress(65288,motion=True)
+	elif c == curses.KEY_ENTER: # enter key
+		onKeypress(10)
 	else:
 		onKeypress(c)
 
