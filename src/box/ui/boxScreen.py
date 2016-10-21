@@ -156,11 +156,12 @@ class BoxScreen(pyglet.window.Window):
 		self.barBatch.draw()
 
 	def on_text(self,text):
-		if allowed_char(text) and len(self.text.document.text) < TEXT_LENGTH:
+		if self.isEditable and allowed_char(text) and len(self.text.document.text) < TEXT_LENGTH:
 			self.text.caret.on_text(text)
 
 	def on_text_motion(self,motion):
-		self.text.caret.on_text_motion(motion)
+                if self.isEditable:
+                        self.text.caret.on_text_motion(motion)
 
 	def focus_caret(self):
 		self.text.caret.position = len(self.text.document.text)
@@ -168,6 +169,8 @@ class BoxScreen(pyglet.window.Window):
 	def on_key_press(self, symbol, modifiers):
 		if symbol == pyglet.window.key.ESCAPE:
 			self.close()
+		elif symbol == pyglet.window.key.ENTER:
+                        self.lockBox()
 
 	### properties
 	
@@ -177,7 +180,7 @@ class BoxScreen(pyglet.window.Window):
 		if data['event'] == 'keypress':
 			if not self.isEditable:
 				return
-			if data['key'] == ord('\r'):
+			if data['key'] == 10:
 				self.lockBox()
 			elif data['type'] == 'text':
 				self.dispatch_event('on_text',chr(data['key']))
@@ -189,6 +192,8 @@ class BoxScreen(pyglet.window.Window):
 	### methods
 	
 	def lockBox(self):
+                if not self.isEditable:
+                        return
 		question = self.getText()
 		self.isEditable = False
 		self.progressBar.setProgress(1)
