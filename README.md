@@ -64,11 +64,24 @@ An interactive installation for biennale 2016
     * `pm2 start src/keyboard/socket/main.js --name keyboardSocketServer`
     * `pm2 save`
   * autostart keyboard grabber:
-    * `/usb/bin/python2 /home/pi/polylogue2/src/keyboard/keygrabber/main.py`
-
-
+    * add line to .bashrc: `/usb/bin/python2 /home/pi/polylogue2/src/keyboard/keygrabber/main.py`
+  * press ESC twice to exit keygrabber
 
 
 ## Router Config
 
 * dhcp adress reservation for keyboardpi on 192.168.72.2
+
+
+
+
+
+## TODO
+
+
+
+* app: nachrichten only unicode
+* drucker anschliessen und steuerung
+* feedback dialog auf bildschirm
+* fragen auf boxen verteilen
+

@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:21:32
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-20 17:45:09
+# @Last Modified time: 2016-10-22 12:21:55
 
 from __future__ import with_statement
 from socketIO_client import SocketIO,LoggingNamespace

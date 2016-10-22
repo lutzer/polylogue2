@@ -3,3 +3,5 @@ data/*
 !data/.keep
 tmp/*
 !tmp/.keep
+log/*
+!log/.keep

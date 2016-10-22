@@ -33,8 +33,8 @@ import com.github.nkzawa.socketio.client.Socket;
  */
 public class ForegroundService extends Service {
 
-    //public static String WEBSOCKET_URL = "http://lu-re.de:8090";
-    public static String WEBSOCKET_URL = "http://192.168.72.100:8090/phone";
+    public static String WEBSOCKET_URL = "http://lu-re.de:8090/phone";
+    //public static String WEBSOCKET_URL = "http://192.168.72.100:8090/phone";
     public final int CONNECTION_CHECK_INTERVAL = 5000;
 
     public static String DELIVERED_BROADCAST = "delivered-broadcast";

@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-01-25 11:08:47
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-10-21 09:40:26
+* @Last Modified time: 2016-10-22 12:28:16
 */
 
 /* use absolute paths for require */
@@ -15,6 +15,7 @@ var winston = require('winston')
 winston.level = 'debug'
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {'timestamp':true});
+winston.add(winston.transports.File, {'timestamp':true, filename: 'log/console.log'})
 
 global.log = function(level,string,object) {
 

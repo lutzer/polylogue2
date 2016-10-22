@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-21 14:59:30
+# @Last Modified time: 2016-10-22 12:16:15
 
 import pyglet
 import sys
@@ -13,9 +13,9 @@ from config import *
 from utils.eventHandler import EventHandler
 
 #colors
-BG_COLOR = (244, 223, 66, 255)
-TEXT_COLOR = (0,0,0,255)
-PROMPT_COLOR = (61,61,61,255)
+BG_COLOR = [244, 223, 66, 255]
+TEXT_COLOR = [0,0,0,255]
+PROMPT_COLOR = [61,61,61,255]
 
 # console params
 FONT_FAMILY = "Perfect DOS VGA 437"
@@ -28,7 +28,12 @@ TEXT_PROMPT = "pl>"
 # progress bar params
 BAR_HEIGHT = 50
 BAR_COLOR = [0, 0, 0, 255]
-STROKE_WIDTH = 3
+STROKE_WIDTH = 4
+
+# dialog params
+DIALOG_BG_COLOR = [66, 66, 66, 255]
+DIALOG_TEXT_COLOR = [255, 255, 255, 255]
+DIALOG_PADDING = 100
 
 # layout params
 PADDING = 20
@@ -38,11 +43,11 @@ logger = logging.getLogger(__name__)
 
 class Rectangle(object):
 	'''Draws a rectangle into a batch.'''
-	def __init__(self, x1, y1, x2, y2, batch, filled=True):
+	def __init__(self, x1, y1, x2, y2, batch, color, filled=True):
 
 		self.vertex_list = batch.add(4, pyglet.gl.GL_QUADS if filled else pyglet.gl.GL_LINE_LOOP, None,
 			('v2i', [x1, y1, x2, y1, x2, y2, x1, y2]),
-			('c4B', BAR_COLOR * 4)
+			('c4B', color * 4)
 		)
 
 class ProgressBar(object):
@@ -52,10 +57,10 @@ class ProgressBar(object):
 		self.x = x
 
 		self.box = Rectangle(x, y, 
-           x + width, y + height, batch, False)
+           x + width, y + height, batch, BAR_COLOR, filled=False)
 
 		self.bar = Rectangle(x, y, 
-           x + width/2, y + height, batch, True)
+           x + width/2, y + height, batch, BAR_COLOR, filled=True)
 
 		self.progress = 1.0;
 
@@ -68,12 +73,23 @@ class ProgressBar(object):
 
 class Dialog(object):
 
-	visible = False
+	visible = True
 
 	def __init__(self, x1, y1, x2, y2, batch):
 
-		self.box = Rectangle(x, y, 
-           x + width, y + height, batch, True)
+		height = y2 - y1
+		width = x2 - x1
+
+		self.box = Rectangle(x1, y1, 
+           x2, y2, batch, DIALOG_BG_COLOR, filled=True)
+
+		self.text = pyglet.text.Label("Dialog Test", x = x1 + width/2, y = y2 - height/2 , 
+			width= width- 2 * MARGIN, anchor_x='center', anchor_y="center",
+			font_name=FONT_FAMILY, font_size=FONT_SIZE, color=DIALOG_TEXT_COLOR,
+			batch=batch )
+
+	def setText(text):
+		self.text.text = text
 
 
 class Console(object):
@@ -118,6 +134,9 @@ class BoxScreen(pyglet.window.Window):
 	progressBar = None
 	barBatch = pyglet.graphics.Batch()
 
+	dialog = None
+	dialogBatch = pyglet.graphics.Batch()
+
 	running = True
 	isEditable = True
 
@@ -141,6 +160,11 @@ class BoxScreen(pyglet.window.Window):
 			width = self.width - 2*PADDING, height = BAR_HEIGHT, batch=self.barBatch)
 		self.progressBar.setProgress(0)
 
+		#setup dialog
+		self.dialog = Dialog(DIALOG_PADDING,DIALOG_PADDING + BAR_HEIGHT, 
+			self.width - DIALOG_PADDING, self.height - DIALOG_PADDING, batch=self.dialogBatch)
+		self.dialog.visible = False
+
 		# focus on text
 		self.focus_caret()
 
@@ -163,6 +187,8 @@ class BoxScreen(pyglet.window.Window):
 		pyglet.gl.glLineWidth(STROKE_WIDTH)
 		self.textBatch.draw()
 		self.barBatch.draw()
+		if self.dialog.visible:
+			self.dialogBatch.draw()
 
 	def on_text(self,text):
 		if self.isEditable and allowed_char(text) and len(self.text.document.text) < TEXT_LENGTH:
@@ -197,12 +223,16 @@ class BoxScreen(pyglet.window.Window):
 				self.dispatch_event('on_text_motion',data['key'])
 		elif data['event'] == 'unlock':
 			self.unlockBox()
+		elif data['event'] == 'dialog':
+			self.dialog.setText(data['text'])
+			self.dialog.visible = data['show']
+			self.isEditable = not data['show']
 	
 	### methods
 	
 	def lockBox(self):
-                if not self.isEditable:
-                        return
+		if not self.isEditable:
+			return
 		question = self.getText()
 		self.isEditable = False
 		self.progressBar.setProgress(1)
