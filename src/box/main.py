@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 16:07:10
+# @Last Modified time: 2016-10-22 18:55:57
 
 from __future__ import with_statement
 import time
@@ -14,17 +14,21 @@ from config import *
 from comm.keyboardSocketThread import *
 from comm.serverSocketThread import *
 from ui.uiThread import UiThread
+from printer.printer import Printer
 
 keyboardSocket = None
 serverSocket = None
 uiThread = None
+printer = None
+
+currentQuestion = ""
 
 # Debug options
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def init():
-   global keyboardSocket, uiThread, serverSocket
+   global keyboardSocket, uiThread, serverSocket, printer
 
    # start socket connection to keyboard
    logger.info('connection to keyboard socket on '+ KEYBOARD_SOCKET_URL)
@@ -38,6 +42,9 @@ def init():
    serverSocket.messageReceivedEvent += onNewMessageReceived
    serverSocket.start()
 
+   logger.info('setup printer')
+   printer = Printer()
+
    logger.info('starting ui thread')
    # setup display
    uiThread = UiThread()
@@ -49,7 +56,10 @@ def init():
 
 # check the socketThread if there are any new messages received and print them
 def loop():
-   time.sleep(1)
+   if printer.hasJob():
+      printer.printNextJob()
+   else:
+      time.sleep(1)
 
 def stop():
    global keyboardSocket, uiThread, serverSocket
@@ -67,24 +77,30 @@ def onKeypress(data):
    uiThread.addEvent(data)
 
 def onBoxUnlocked():
-   global serverSocket
+   global serverSocket,currentQuestion
 
    logger.info('Box unlocked')
    serverSocket.sendQuestionExpired(BOX_ID)
+   printer.addLine()
+   printer.addQuestion(currentQuestion)
 
 def onBoxLock(question):
-   global serverSocket
+   global serverSocket, currentQuestion
 
    logger.info('Received new question: '+question)
+   currentQuestion = question
+
    serverSocket.sendNewQuestion(BOX_ID,question)
+   printer.addLine()
+
+
 
 ### Socket events
-
 
 def onNewMessageReceived(data):
    logger.info('received new message: ' + str(data))
    if data['boxId'] == BOX_ID:
-      logger.info("printing message: " + str(data['message']))
+      printer.addMessage(data['message'])
 
 
 # start main loop
