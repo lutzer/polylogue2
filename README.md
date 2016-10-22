@@ -51,11 +51,8 @@ An interactive installation for biennale 2016
   * autostart script afterdesktop loads, change file: `sudo nano ~/.config/lxsession/LXDE-pi/autostart `
   * add line: `@/usr/bin/python2 /home/pi/polylogue2/src/box/main.py`
   * disable power off screen: edit `sudo nano /etc/lightdm/lightdm.conf` set `xserver-command=X -s 0 dpms`
-  * install font: copy perfect dos font to **/usr/share/fonts**
-
-* setup pi for printer:
-
-  * ​
+  * install font: copy perfect dos font to **/usr/share/fonts**`
+  * follow **Thermal printer setup**
 
 * for keyboard
 
@@ -76,6 +73,15 @@ An interactive installation for biennale 2016
 
 * dhcp adress reservation for keyboardpi on 192.168.72.2
 
+
+
+
+## Thermal Printer setup for Pi3
+
+* disable serial console: `sudo raspi-config` -> Advanced Options -> Serial -> disable
+* enable part: `sudo nano /boot/config.txt`, change line: `enable_uart=1`
+* disable console:
+  *  `sudo systemctl stop serial-getty@ttyS0.service && sudo systemctl disable serial-getty@ttyS0.service `
 
 
 
