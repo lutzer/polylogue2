@@ -72,7 +72,7 @@ class LinePrinter:
 		logger.info("printing" + str(job))
 
 		
-		self.__printText(job['text'])
+		self.printText(job['text'])
 		# if job['type'] == "question":
   #                       self.__printText(job['text'])
   #                       self.printer.feed(3)
