@@ -19,7 +19,7 @@ from printer.printer import Printer
 keyboardSocket = None
 serverSocket = None
 uiThread = None
-printer = None
+linePrinter = None
 
 currentQuestion = ""
 
@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def init():
-   global keyboardSocket, uiThread, serverSocket, printer
+   global keyboardSocket, uiThread, serverSocket, linePrinter
 
    # start socket connection to keyboard
    logger.info('connection to keyboard socket on '+ KEYBOARD_SOCKET_URL)
@@ -43,7 +43,7 @@ def init():
    serverSocket.start()
 
    logger.info('setup printer')
-   printer = Printer()
+   linePrinter = Printer()
 
    logger.info('starting ui thread')
    # setup display
@@ -56,8 +56,10 @@ def init():
 
 # check the socketThread if there are any new messages received and print them
 def loop():
-   if printer.hasJob():
-      printer.printNextJob()
+   global linePrinter
+   
+   if linePrinter.hasJobs():
+      linePrinter.printNextJob()
    else:
       time.sleep(1)
 
@@ -77,33 +79,31 @@ def onKeypress(data):
    uiThread.addEvent(data)
 
 def onBoxUnlocked():
-   global serverSocket,currentQuestion
+   global serverSocket,currentQuestion, linePrinter
 
    logger.info('Box unlocked')
    serverSocket.sendQuestionExpired(BOX_ID)
-   printer.addLine()
-   printer.addQuestion(currentQuestion)
+   linePrinter.addLine()
+   linePrinter.addQuestion(currentQuestion)
 
 def onBoxLock(question):
-   global serverSocket, currentQuestion
+   global serverSocket, currentQuestion, linePrinter
 
    logger.info('Received new question: '+question)
    currentQuestion = question
 
    serverSocket.sendNewQuestion(BOX_ID,question)
-   printer.addLine()
-
-
+   linePrinter.addLine()
 
 ### Socket events
 
 def onNewMessageReceived(data):
+   global linePrinter
    logger.info('received new message: ' + str(data))
    if data['boxId'] == BOX_ID:
-      printer.addMessage(data['message'])
+      linePrinter.addMessage(data['message'])
 
-
-# start main loop
+### start main loop
 init()
 try:
    while True:

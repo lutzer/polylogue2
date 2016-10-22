@@ -32,7 +32,8 @@ class Printer:
 	def __init__(self):
 
 		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
-
+		self.printer.sleep()
+                
 		self.queue = [] # message queue
 		self.queueLock = Lock()
 
@@ -51,15 +52,15 @@ class Printer:
 			self.queue.append(job)
 
 	# add question text
-	def addQuestion(self):
+	def addQuestion(self,text):
 		job = dict(type="question", text=text)
 		with self.queueLock:
 			self.queue.append(job)
 
-	def hasJobs():
+	def hasJobs(self):
 		return len(self.queue) > 0
 
-	def printNextJob():
+	def printNextJob(self):
 		with self.queueLock:
 			if len(self.queue) > 0:
 				job = self.queue.pop(0)
@@ -68,8 +69,14 @@ class Printer:
 
 		logger.info("printing" + str(job))
 
-		printer.wake()
-		printer.println(job['text'])
-		printer.feed(3)
-		printer.sleep()
+		self.printer.wake()
+		if job['type'] == "question":
+                        self.printer.setSize('L')
+                        self.printer.println(job['text'])
+                else:
+                        self.printer.setSize('M')
+                        self.printer.println(job['text'])
+                        
+		self.printer.feed(3)
+		self.printer.sleep()
 		
