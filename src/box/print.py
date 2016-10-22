@@ -12,11 +12,11 @@
 # @Last Modified time: 2016-01-25 19:41:16
 
 # This script sends a message to the adafruit thermal printer.
-# It prints the message vertically on the paper roll.
 
-#!/usr/bin/python
+#!/usr/bin/python2
 
 from printer.Adafruit_Thermal import *
+import sys,getopt
 
 PRINTER_WIDTH_PIXELS = 384 # in pixels
 
@@ -25,11 +25,11 @@ def main(argv):
    try:
       opts, args = getopt.getopt(argv,"m:",["message="])
    except getopt.GetoptError:
-      print 'polylogue.py -m <message>'
+      print 'print.py -m <message>'
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print 'polylogue.py -m <message>'
+         print 'print.py -m <message>'
          sys.exit()
       if opt in ("-m", "--message"):
          sendToPrinter(arg)
@@ -39,7 +39,7 @@ def sendToPrinter(message):
 
    print 'Printing message:', message
 
-   printer = Adafruit_Thermal("/dev/ttyAMA0", 19200, timeout=5)
+   printer = Adafruit_Thermal("/dev/ttyS0", 19200, timeout=5)
    printer.wake()
 
    printer.println(message)
