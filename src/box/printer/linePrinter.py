@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 23:06:30
+# @Last Modified time: 2016-10-23 01:38:17
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -28,7 +28,7 @@ class LinePrinter:
 	printer = None
 	fontRenderer = None
 
-	def __init__(self):
+	def __init__(self,no_printer=False):
 
 		#self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
 		#self.printer.sleep()

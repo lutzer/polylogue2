@@ -40,6 +40,19 @@ An interactive installation for biennale 2016
     boxpi3: 192.168.72.5
     ```
 
+* disable bluetooth to save power:
+
+  * add to file: `sudo nano /etc/modprobe.d/raspi-blacklist.conf`
+
+    ```
+    ##wifi
+    #blacklist brcmfmac
+    #blacklist brcmutil
+    ##bt
+    blacklist btbcm
+    blacklist hci_uart
+    ```
+
 * pull repo: `git clone https://github.com/lutzer/polylogue2.git`
 
 * python packages

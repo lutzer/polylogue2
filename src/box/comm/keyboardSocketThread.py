@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:21:32
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 12:21:55
+# @Last Modified time: 2016-10-23 01:36:45
 
 from __future__ import with_statement
 from socketIO_client import SocketIO,LoggingNamespace
@@ -32,3 +32,9 @@ class KeyboardSocketThread(Thread):
 		logger.info('stopping Socket Thread.')
 		del self.keypressEvent
 		self.running = False
+
+	def disconnect(self):
+		self.socket.disconnect()
+
+	def connect(self):
+		self.socket.connect()
