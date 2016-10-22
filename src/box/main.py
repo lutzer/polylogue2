@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 18:55:57
+# @Last Modified time: 2016-10-22 21:18:23
 
 from __future__ import with_statement
 import time
@@ -14,7 +14,7 @@ from config import *
 from comm.keyboardSocketThread import *
 from comm.serverSocketThread import *
 from ui.uiThread import UiThread
-from printer.printer import Printer
+from printer.linePrinter import LinePrinter
 
 keyboardSocket = None
 serverSocket = None
@@ -43,7 +43,7 @@ def init():
    serverSocket.start()
 
    logger.info('setup printer')
-   linePrinter = Printer()
+   linePrinter = LinePrinter()
 
    logger.info('starting ui thread')
    # setup display

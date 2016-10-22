@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 18:51:54
+# @Last Modified time: 2016-10-22 21:51:52
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -14,25 +14,27 @@
 from __future__ import with_statement
 from threading import Lock
 import logging
+from PIL import Image
 
 from Adafruit_Thermal import *
+from fontRenderer import *
 
 logger = logging.getLogger(__name__)
 
-class Question:
+FONT_WIDTH = 24
+PRINTER_PAPER_WIDTH = 300
 
-	def __init__(self, question):
-		self.text = text
+class LinePrinter:
 
-
-
-
-class Printer:
+	printer = None
+	fontRenderer = None
 
 	def __init__(self):
 
 		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
 		self.printer.sleep()
+
+		fontRenderer = FontRenderer('../font/cutivemono.png','../font/cutivemono.json',FONT_WIDTH)
                 
 		self.queue = [] # message queue
 		self.queueLock = Lock()
@@ -70,13 +72,39 @@ class Printer:
 		logger.info("printing" + str(job))
 
 		self.printer.wake()
-		if job['type'] == "question":
-                        self.printer.setSize('L')
-                        self.printer.println(job['text'])
-                        self.printer.feed(3)
-                else:
-                        self.printer.setSize('M')
-                        self.printer.println(job['text'])
+		self.__printText(job['text'])
+		# if job['type'] == "question":
+  #                       self.__printText(job['text'])
+  #                       self.printer.feed(3)
+  #               else:
+  #                       self.printer.setSize('M')
+  #                       self.printer.println(job['text'])
                         
 		self.printer.sleep()
+
+	def __printText(text):
+
+		columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, FONT_WIDTH), (255, 255, 255))
+
+		columnIndex = 0
+		for character in enumerate(text):
+
+			columnStart = PRINTER_PAPER_WIDTH - columnWidth * FONT_WIDTH
+
+			if columnStart > 0:
+				# add character to column
+				symbol = fontRenderer.getCharacterImage(character)
+				symbol = symbol.rotate(180, 0, True)
+         		symbol = fontRenderer.makeBgWhite(symbol)
+				columnImg.paste(symbol, box=(PRINTER_PAPER_WIDTH - columnWidth, 0))
+			else:
+				# print image
+				self.printer.printImage(columnImg)
+				# set everything to white
+				columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, FONT_WIDTH), (255, 255, 255))
+				# start new column
+				columnIndex = 0
+
+
+
 		

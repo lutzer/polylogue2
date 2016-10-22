@@ -35,9 +35,9 @@ An interactive installation for biennale 2016
   * or simply plugin ethernet cable
   * ```
     keyboardpi: 192.168.72.2
-    boxpi1: 192.168.72.11
-    boxpi2: 192.168.72.12
-    ...
+    boxpi1: 192.168.72.3
+    boxpi2: 192.168.72.4
+    boxpi3: 192.168.72.5
     ```
 
 * pull repo: `git clone https://github.com/lutzer/polylogue2.git`
@@ -79,11 +79,12 @@ An interactive installation for biennale 2016
 ## Thermal Printer setup for Pi3
 
 * disable serial console: `sudo raspi-config` -> Advanced Options -> Serial -> disable
+
 * enable part: `sudo nano /boot/config.txt`, change line: `enable_uart=1`
-* disable console:
-  *  `sudo systemctl stop serial-getty@ttyS0.service && sudo systemctl disable serial-getty@ttyS0.service `
 
+* disable console:  `sudo systemctl stop serial-getty@ttyS0.service && sudo systemctl disable serial-getty@ttyS0.service `
 
+  ​
 
 
 ## TODO
