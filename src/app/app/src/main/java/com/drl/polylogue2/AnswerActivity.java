@@ -8,6 +8,10 @@ import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class AnswerActivity extends AppCompatActivity {
 
@@ -63,9 +68,45 @@ public class AnswerActivity extends AppCompatActivity {
             messageView.setText(question.question);
 
             //set input focus
-            findViewById(R.id.editText).requestFocus();
+            EditText editText = (EditText)findViewById(R.id.editText);
+            editText.requestFocus();
 
-            //setup expiration time
+            //set input filter to only allow asci
+            InputFilter asciFilter = new InputFilter() {
+
+                @Override
+                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+
+                    boolean keepOriginal = true;
+                    StringBuilder sb = new StringBuilder(end - start);
+                    for (int i = start; i < end; i++) {
+                        char c = source.charAt(i);
+                        if (isCharAllowed(c)) // put your condition here
+                            sb.append(c);
+                        else
+                            keepOriginal = false;
+                    }
+                    if (keepOriginal)
+                        return null;
+                    else {
+                        if (source instanceof Spanned) {
+                            SpannableString sp = new SpannableString(sb);
+                            TextUtils.copySpansFrom((Spanned) source, start, sb.length(), null, sp, 0);
+                            return sp;
+                        } else {
+                            return sb;
+                        }
+                    }
+                }
+
+                private boolean isCharAllowed(char c) {
+                    return Pattern.matches("[\\x1f-\\x80]", Character.toString(c));
+                }
+
+            };
+            editText.setFilters(new InputFilter[] { asciFilter });
+
+                    //setup expiration time
             Date expiresAt = question.getExpiresAt();
             startTimer(expiresAt.getTime() - new Date().getTime());
         }

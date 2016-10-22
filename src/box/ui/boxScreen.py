@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 12:16:15
+# @Last Modified time: 2016-10-22 13:11:36
 
 import pyglet
 import sys
@@ -195,8 +195,8 @@ class BoxScreen(pyglet.window.Window):
 			self.text.caret.on_text(text)
 
 	def on_text_motion(self,motion):
-                if self.isEditable:
-                        self.text.caret.on_text_motion(motion)
+		if self.isEditable:
+			self.text.caret.on_text_motion(motion)
 
 	def focus_caret(self):
 		self.text.caret.position = len(self.text.document.text)
@@ -205,7 +205,7 @@ class BoxScreen(pyglet.window.Window):
 		if symbol == pyglet.window.key.ESCAPE:
 			self.close()
 		elif symbol == pyglet.window.key.ENTER:
-                        self.lockBox()
+			self.lockBox()
 
 	### properties
 	
