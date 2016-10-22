@@ -34,7 +34,7 @@ class LinePrinter:
 		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
 		self.printer.sleep()
 
-		fontRenderer = FontRenderer('../font/cutivemono.png','../font/cutivemono.json',FONT_WIDTH)
+		self.fontRenderer = FontRenderer('font/cutivemono.png','font/cutivemono.json',FONT_WIDTH)
                 
 		self.queue = [] # message queue
 		self.queueLock = Lock()
@@ -71,7 +71,7 @@ class LinePrinter:
 
 		logger.info("printing" + str(job))
 
-		self.printer.wake()
+		
 		self.__printText(job['text'])
 		# if job['type'] == "question":
   #                       self.__printText(job['text'])
@@ -80,23 +80,22 @@ class LinePrinter:
   #                       self.printer.setSize('M')
   #                       self.printer.println(job['text'])
                         
-		self.printer.sleep()
 
-	def __printText(text):
-
+	def printText(self,text):
+                self.printer.wake()
+                
 		columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, FONT_WIDTH), (255, 255, 255))
-
 		columnIndex = 0
-		for character in enumerate(text):
+		for character in text:
 
-			columnStart = PRINTER_PAPER_WIDTH - columnWidth * FONT_WIDTH
+			startX = PRINTER_PAPER_WIDTH - columnIndex * FONT_WIDTH
 
-			if columnStart > 0:
+			if startX > 0:
 				# add character to column
-				symbol = fontRenderer.getCharacterImage(character)
+				symbol = self.fontRenderer.getCharacterImage(character)
 				symbol = symbol.rotate(180, 0, True)
-         		symbol = fontRenderer.makeBgWhite(symbol)
-				columnImg.paste(symbol, box=(PRINTER_PAPER_WIDTH - columnWidth, 0))
+                                symbol = self.fontRenderer.makeBgWhite(symbol)
+				columnImg.paste(symbol, box=(startX, 0))
 			else:
 				# print image
 				self.printer.printImage(columnImg)
@@ -104,6 +103,10 @@ class LinePrinter:
 				columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, FONT_WIDTH), (255, 255, 255))
 				# start new column
 				columnIndex = 0
+
+		# print the rest
+		self.printer.printImage(columnImg)
+		self.printer.sleep()
 
 
 

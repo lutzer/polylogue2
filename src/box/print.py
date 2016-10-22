@@ -15,7 +15,7 @@
 
 #!/usr/bin/python2
 
-from printer.Adafruit_Thermal import *
+from printer.linePrinter import LinePrinter
 import sys,getopt
 
 PRINTER_WIDTH_PIXELS = 384 # in pixels
@@ -39,15 +39,9 @@ def sendToPrinter(message):
 
    print 'Printing message:', message
 
-   printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
-   printer.wake()
+   printer = LinePrinter()
 
-   printer.println(message)
-   
-   printer.feed(3)
-
-   printer.sleep()
-
+   printer.printText(message)
    print 'done.'
 
 if __name__ == "__main__":
