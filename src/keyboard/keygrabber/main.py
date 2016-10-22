@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-20 23:45:27
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-21 15:56:22
+# @Last Modified time: 2016-10-22 15:59:44
 
 import curses
 import logging
@@ -68,7 +68,7 @@ def loop():
 		onKeypress(65362,motion=True)
 	elif c == curses.KEY_DOWN:
 		onKeypress(65364,motion=True)
-	elif c == 127 or c == 330 or curses.KEY_BACKSPACE: # backspace key
+	elif c == 127 or c == 330 or c == curses.KEY_BACKSPACE: # backspace key
 		onKeypress(65288,motion=True)
 	elif c == curses.KEY_ENTER: # enter key
 		onKeypress(10) 

@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-21 15:27:13
+# @Last Modified time: 2016-10-22 16:07:10
 
 from __future__ import with_statement
 import time
@@ -47,7 +47,7 @@ def init():
    
    logger.info('service initialized, starting loop.')
 
-# check the socketThread if there are any new messages received
+# check the socketThread if there are any new messages received and print them
 def loop():
    time.sleep(1)
 

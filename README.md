@@ -50,8 +50,12 @@ An interactive installation for biennale 2016
 * for boxes:
   * autostart script afterdesktop loads, change file: `sudo nano ~/.config/lxsession/LXDE-pi/autostart `
   * add line: `@/usr/bin/python2 /home/pi/polylogue2/src/box/main.py`
-  * disable power off screen: edit `sudo nano /etc/kbd/config` set `BLANK_TIME=0`
+  * disable power off screen: edit `sudo nano /etc/lightdm/lightdm.conf` set `xserver-command=X -s 0 dpms`
   * install font: copy perfect dos font to **/usr/share/fonts**
+
+* setup pi for printer:
+
+  * ​
 
 * for keyboard
 

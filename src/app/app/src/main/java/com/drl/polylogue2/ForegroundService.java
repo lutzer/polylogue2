@@ -33,6 +33,7 @@ import com.github.nkzawa.socketio.client.Socket;
  */
 public class ForegroundService extends Service {
 
+    private static final int SERVICE_NOTIFICATION_ID = 645;
     public static String WEBSOCKET_URL = "http://lu-re.de:8090/phone";
     //public static String WEBSOCKET_URL = "http://192.168.72.100:8090/phone";
     public final int CONNECTION_CHECK_INTERVAL = 5000;
@@ -114,6 +115,8 @@ public class ForegroundService extends Service {
 
         keepServiceAlive();
 
+        runAsForeground();
+
     }
 
     @Override
@@ -175,6 +178,17 @@ public class ForegroundService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void runAsForeground(){
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("Polylogue2")
+                .setContentText("Message Service Running")
+                .setSmallIcon(R.drawable.message);
+
+        startForeground(SERVICE_NOTIFICATION_ID, mBuilder.build());
+
     }
 
 
