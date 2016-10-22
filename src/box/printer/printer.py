@@ -73,10 +73,10 @@ class Printer:
 		if job['type'] == "question":
                         self.printer.setSize('L')
                         self.printer.println(job['text'])
+                        self.printer.feed(3)
                 else:
                         self.printer.setSize('M')
                         self.printer.println(job['text'])
                         
-		self.printer.feed(3)
 		self.printer.sleep()
 		
