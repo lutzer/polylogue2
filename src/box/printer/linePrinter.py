@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 21:51:52
+# @Last Modified time: 2016-10-22 23:06:30
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -21,8 +21,7 @@ from fontRenderer import *
 
 logger = logging.getLogger(__name__)
 
-FONT_WIDTH = 24
-PRINTER_PAPER_WIDTH = 300
+PRINTER_PAPER_WIDTH = 384
 
 class LinePrinter:
 
@@ -31,10 +30,11 @@ class LinePrinter:
 
 	def __init__(self):
 
-		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
-		self.printer.sleep()
+		#self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
+		#self.printer.sleep()
 
-		self.fontRenderer = FontRenderer('font/cutivemono.png','font/cutivemono.json',FONT_WIDTH)
+		self.fontRenderer = FontRenderer('font/cutivemono32.png','font/cutivemono32.json')
+		#self.fontHeight = 
                 
 		self.queue = [] # message queue
 		self.queueLock = Lock()
@@ -82,30 +82,40 @@ class LinePrinter:
                         
 
 	def printText(self,text):
-                self.printer.wake()
-                
-		columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, FONT_WIDTH), (255, 255, 255))
-		columnIndex = 0
+		fontHeight = self.fontRenderer.fontHeight
+
+		columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
+		
+		startX = PRINTER_PAPER_WIDTH # start from right
 		for character in text:
 
-			startX = PRINTER_PAPER_WIDTH - columnIndex * FONT_WIDTH
+			#first create character
+			symbol = self.fontRenderer.getCharacterImage(character)
+			symbol = symbol.rotate(180, 0, True)
+			#symbol = self.fontRenderer.makeBgWhite(symbol)
 
+			charWidth = symbol.size[0]
+			startX -= charWidth
 			if startX > 0:
 				# add character to column
-				symbol = self.fontRenderer.getCharacterImage(character)
-				symbol = symbol.rotate(180, 0, True)
-                                symbol = self.fontRenderer.makeBgWhite(symbol)
 				columnImg.paste(symbol, box=(startX, 0))
 			else:
 				# print image
-				self.printer.printImage(columnImg)
-				# set everything to white
-				columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, FONT_WIDTH), (255, 255, 255))
+				self.__printImage(columnImg)
+
 				# start new column
-				columnIndex = 0
+				columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
+
+				# add character
+				startX = PRINTER_PAPER_WIDTH - charWidth
+				columnImg.paste(symbol, box=(startX, 0))
 
 		# print the rest
-		self.printer.printImage(columnImg)
+		self.__printImage(columnImg)
+
+	def __printImage(self,img):
+		self.printer.wake()
+		self.printer.printImage(img);
 		self.printer.sleep()
 
 

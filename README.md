@@ -79,12 +79,13 @@ An interactive installation for biennale 2016
 ## Thermal Printer setup for Pi3
 
 * disable serial console: `sudo raspi-config` -> Advanced Options -> Serial -> disable
-
 * enable part: `sudo nano /boot/config.txt`, change line: `enable_uart=1`
-
 * disable console:  `sudo systemctl stop serial-getty@ttyS0.service && sudo systemctl disable serial-getty@ttyS0.service `
 
-  ​
+## Font generation
+
+- font generation by SpriteFontBuilder for mac
+- conversion with this script: [https://github.com/playcanvas/fonts/blob/master/fnt_to_json.py](https://github.com/playcanvas/fonts/blob/master/fnt_to_json.py)
 
 
 ## TODO
