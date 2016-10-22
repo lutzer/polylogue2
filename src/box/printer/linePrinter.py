@@ -30,8 +30,8 @@ class LinePrinter:
 
 	def __init__(self,no_printer=False):
 
-		#self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
-		#self.printer.sleep()
+		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
+		self.printer.sleep()
 
 		self.fontRenderer = FontRenderer('font/cutivemono32.png','font/cutivemono32.json')
 		#self.fontHeight = 
@@ -72,7 +72,7 @@ class LinePrinter:
 		logger.info("printing" + str(job))
 
 		
-		self.__printText(job['text'])
+		self.printText(job['text'])
 		# if job['type'] == "question":
   #                       self.__printText(job['text'])
   #                       self.printer.feed(3)
@@ -92,7 +92,7 @@ class LinePrinter:
 			#first create character
 			symbol = self.fontRenderer.getCharacterImage(character)
 			symbol = symbol.rotate(180, 0, True)
-			#symbol = self.fontRenderer.makeBgWhite(symbol)
+			symbol = self.fontRenderer.makeBgWhite(symbol)
 
 			charWidth = symbol.size[0]
 			startX -= charWidth
