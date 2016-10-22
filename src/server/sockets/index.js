@@ -52,7 +52,7 @@ module.exports = function (http) {
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
-	        log("info",'Socket: User disconnected');
+	        log("info",'Socket: Box disconnected');
 
 	        //remove server events
 	        socket.removeListener('question:new',questionAddedHandler);
@@ -106,7 +106,7 @@ module.exports = function (http) {
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
-	        log("info",'Socket: User disconnected');
+	        log("info",'Socket: Phone disconnected');
 
 	        //remove server events
 	        socket.removeListener('message:new',newMessageHandler);
