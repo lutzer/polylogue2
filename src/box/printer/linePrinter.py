@@ -15,6 +15,7 @@ from __future__ import with_statement
 from threading import Lock
 import logging
 from PIL import Image
+import sys
 
 from Adafruit_Thermal import *
 from fontRenderer import *
@@ -33,7 +34,9 @@ class LinePrinter:
 		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
 		self.printer.sleep()
 
-		self.fontRenderer = FontRenderer('font/cutivemono32.png','font/cutivemono32.json')
+		currentDir = sys.path[0]
+
+		self.fontRenderer = FontRenderer(currentDir +'/font/cutivemono32.png', currentDir + '/font/cutivemono32.json')
 		#self.fontHeight = 
                 
 		self.queue = [] # message queue

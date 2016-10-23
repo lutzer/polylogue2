@@ -23,6 +23,8 @@ linePrinter = None
 
 currentQuestion = ""
 
+print sys.path[0]
+
 # Debug options
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -43,7 +45,11 @@ def init():
    serverSocket.start()
 
    logger.info('setup printer')
-   linePrinter = LinePrinter()
+   try:
+      linePrinter = LinePrinter()
+   except Exception as err:
+      logger.error("Could not start printer: " + str(err))
+      stop()
 
    logger.info('starting ui thread')
    # setup display
@@ -65,10 +71,12 @@ def loop():
 
 def stop():
    global keyboardSocket, uiThread, serverSocket
-
-   uiThread.stop();
-   keyboardSocket.stop();
-   serverSocket.stop();
+   if uiThread:
+      uiThread.stop();
+   if keyboardSocket:
+      keyboardSocket.stop();
+   if serverSocket:
+      serverSocket.stop();
    sys.exit()
 
 ### Box events
