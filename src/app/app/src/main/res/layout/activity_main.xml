@@ -9,19 +9,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.drl.polylogue2.MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
+        android:id="@+id/topLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Starting Service ..."/>
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Polylogue II"
+            style="@style/titleText"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Starting Service ..."
+            android:layout_below="@+id/title"
+            android:layout_marginTop="@dimen/spacing"
+            style="@style/normalText"/>
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        style="?android:attr/progressBarStyleLargeInverse">
     </ProgressBar>
 
     <LinearLayout
@@ -29,7 +48,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/topLayout"
         android:layout_centerHorizontal="true"
         android:visibility="invisible">
 
@@ -38,26 +57,17 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Connection to Polylogue II succesfully established."/>
+            android:layout_marginTop="@dimen/spacing"
+            android:text="Connection to Polylogue II succesfully established."
+            style="@style/normalText"/>
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="You will receive a notification, once there is a new submission."/>
-
-        <!--<Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="Close"
-            android:onClick="onButtonClicked"
-            android:layout_gravity="center_horizontal" />-->
+            android:layout_marginTop="@dimen/spacing"
+            android:text="You will receive a notification, once there is a new submission."
+            style="@style/normalText"/>
 
     </LinearLayout>
 </RelativeLayout>

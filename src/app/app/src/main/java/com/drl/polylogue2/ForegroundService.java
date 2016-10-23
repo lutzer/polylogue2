@@ -1,17 +1,21 @@
 package com.drl.polylogue2;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.transition.Visibility;
 
 
 import org.json.JSONException;
@@ -202,7 +206,7 @@ public class ForegroundService extends Service {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Polylogue2")
                 .setContentText("Message Service Running")
-                .setSmallIcon(R.drawable.message);
+                .setSmallIcon(R.drawable.service_icon);
 
         startForeground(SERVICE_NOTIFICATION_ID, mBuilder.build());
     }
@@ -274,6 +278,7 @@ public class ForegroundService extends Service {
             .setContentTitle(action)
             .setContentText(question.question)
             .setContentIntent(resultPendingIntent)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service

@@ -2,70 +2,88 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.drl.polylogue2.AnswerActivity">
-
+    tools:context="com.drl.polylogue2.AnswerActivity"
+    android:id="@+id/mainLayout">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="400px"
-        android:id="@+id/messageView"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textAlignment="center"
         android:gravity="center"
+        style="@style/titleText"
+        android:text="New Question"/>
+
+    <TextView
+        android:id="@+id/messageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:padding="@dimen/padding"
-        style="@style/bigText"/>
+        style="@style/bigText"
+        android:layout_below="@+id/title"/>
 
 
     <TextView
+        android:id="@+id/timerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Question expires in 0 seconds."
         android:padding="@dimen/padding"
         android:layout_below="@+id/messageView"
         android:textColor="@color/colorAccent"
-        android:id="@+id/timerView"/>
+        style="@style/normalText"/>
 
     <EditText
+        android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minLines="3"
         android:inputType="textMultiLine"
         android:maxLength="256"
         android:ems="10"
         android:lines="5"
-        android:id="@+id/editText"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="@dimen/spacing"
         android:layout_below="@+id/timerView"
+        android:layout_above="@+id/button"
         android:background="@color/colorBackground"
         android:paddingTop="@dimen/padding"
         android:paddingBottom="@dimen/padding"
         android:paddingRight="@dimen/padding"
-        android:paddingLeft="25dp"
+        android:paddingLeft="30dp"
         android:gravity="top"
-        android:hint="Your answer"/>
+        android:hint="Your answer"
+        style="@style/normalText"/>
 
     <TextView
+        android:id="@+id/promptText"
+        android:layout_alignTop="@+id/editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=">"
         android:padding="@dimen/padding"
-        android:layout_alignTop="@+id/editText"
         android:layout_alignParentStart="true"
-        android:textColor="@color/colorAccent"/>
+        android:textColor="@color/colorAccent"
+        style="@style/normalText"/>
+
 
     <Button
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send"
-        android:id="@+id/button"
-        android:layout_below="@+id/editText"
-        android:layout_alignRight="@+id/imageView"
-        android:onClick="onButtonClicked"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/spacing"
+        android:layout_alignParentBottom="true"
+        android:onClick="onButtonClicked"
+        style="@style/button"/>
 
 
 

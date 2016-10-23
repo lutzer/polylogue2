@@ -6,16 +6,38 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:background">@color/colorBackground</item>
+        <!-- set fullscreen -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
 
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textStyle">normal</item>
+    <style name="button">
+        <item name="android:textColor">@color/colorBackground</item>
+        <item name="android:background">@color/colorText</item>
+        <item name="android:fontFamily">sans-serif-bold</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <!-- Text styles -->
-    <style name="bigText">
-        <item name="android:textSize">24sp</item>
+    <style name="normalText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <style name="bigText" parent="normalText">
+        <item name="android:textSize">26sp</item>
         <item name="android:fontFamily">sans-serif-bold</item>
+    </style>
+
+    <style name="titleText" parent="normalText">
+        <item name="android:layout_marginTop">@dimen/spacing</item>
+        <item name="android:layout_marginBottom">@dimen/largeSpacing</item>
+        <item name="android:textSize">32sp</item>
+        <item name="android:fontFamily">sans-serif-bold</item>
+        <item name="android:textColor">@color/colorAccent</item>
     </style>
 
 </resources>
