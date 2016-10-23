@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 23:01:38
+# @Last Modified time: 2016-10-23 23:40:03
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -80,7 +80,7 @@ class LinePrinter:
 			self.printText(job['text'])
 			self.printer.feed(3)
 		else:
-		selfelf.printText(job['text'])
+			self.printText(job['text'])
                         
 
 	def printText(self,text):
