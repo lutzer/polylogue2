@@ -105,8 +105,8 @@ An interactive installation for biennale 2016
 
 
 
-* app: nachrichten only unicode
 * drucker anschliessen und steuerung
 * feedback dialog auf bildschirm
 * fragen auf boxen verteilen
+* app fix reconnection bug
 

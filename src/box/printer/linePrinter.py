@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 01:38:17
+# @Last Modified time: 2016-10-23 12:51:02
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -28,13 +28,15 @@ class LinePrinter:
 	printer = None
 	fontRenderer = None
 
-	def __init__(self,no_printer=False):
+	def __init__(self,disablePrinter=False):
 
-		self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
-		self.printer.sleep()
+		self.printerDisabled = disablePrinter
+
+		if not self.printerDisabled:
+			self.printer = Adafruit_Thermal("/dev/serial0", 19200, timeout=5)
+			self.printer.sleep()
 
 		self.fontRenderer = FontRenderer('font/cutivemono32.png','font/cutivemono32.json')
-		#self.fontHeight = 
                 
 		self.queue = [] # message queue
 		self.queueLock = Lock()
@@ -114,9 +116,10 @@ class LinePrinter:
 		self.__printImage(columnImg)
 
 	def __printImage(self,img):
-		self.printer.wake()
-		self.printer.printImage(img);
-		self.printer.sleep()
+		if not self.printerDisabled:
+			self.printer.wake()
+			self.printer.printImage(img);
+			self.printer.sleep()
 
 
 

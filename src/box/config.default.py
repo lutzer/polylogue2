@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-20 19:43:25
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 01:37:34
+# @Last Modified time: 2016-10-23 01:42:04
 
 
 KEYBOARD_SOCKET_URL = "192.168.72.2"
@@ -17,4 +17,4 @@ BOX_ID = 0
 
 QUESTION_DURATION = 1000 * 60 * 1 # in miliseconds
 
-NO_PRINTER = 
+PRINTER_DISABLED = False

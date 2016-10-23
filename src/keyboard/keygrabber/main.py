@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-20 23:45:27
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 15:59:44
+# @Last Modified time: 2016-10-23 11:11:10
 
 import curses
 import logging
@@ -47,7 +47,8 @@ def stop():
 	curses.echo()
 	curses.endwin()
 
-	socket.stop()
+	if socket:
+		socket.stop()
 
 def loop():
 	global stdscr, running, socket
