@@ -205,7 +205,6 @@ public class ForegroundService extends Service {
                 .setSmallIcon(R.drawable.message);
 
         startForeground(SERVICE_NOTIFICATION_ID, mBuilder.build());
-
     }
 
 
