@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 21:18:23
+# @Last Modified time: 2016-10-23 12:44:50
 
 from __future__ import with_statement
 import time
@@ -44,9 +44,8 @@ def init():
    serverSocket.messageReceivedEvent += onNewMessageReceived
    serverSocket.start()
 
-   logger.info('setup printer')
    try:
-      linePrinter = LinePrinter()
+      linePrinter = LinePrinter(PRINTER_DISABLED)
    except Exception as err:
       logger.error("Could not start printer: " + str(err))
       stop()
@@ -91,6 +90,7 @@ def onBoxUnlocked():
 
    logger.info('Box unlocked')
    serverSocket.sendQuestionExpired(BOX_ID)
+   keyboardSocket.sendAvailable(True);
    linePrinter.addLine()
    linePrinter.addQuestion(currentQuestion)
 
@@ -101,6 +101,7 @@ def onBoxLock(question):
    currentQuestion = question
 
    serverSocket.sendNewQuestion(BOX_ID,question)
+   keyboardSocket.sendAvailable(False);
    linePrinter.addLine()
 
 ### Socket events
