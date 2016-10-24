@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 16:52:51
+# @Last Modified time: 2016-10-24 17:07:40
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -121,6 +121,9 @@ class LinePrinter:
 				# add character
 				startX = PRINTER_PAPER_WIDTH - charWidth
 				column.paste(symbol, box=(startX, 0))
+
+		#insert last column
+		columns.insert(0,column)
 
 		# print all the columns
 		for img in columns:
