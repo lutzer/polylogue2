@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 16:42:49
+# @Last Modified time: 2016-10-24 16:52:51
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -75,6 +75,7 @@ class LinePrinter:
 
 		logger.info("printing" + str(job))
 
+		self.wake();
 		
 		if job['type'] == "question":
 			self.printText(job['text'])
@@ -85,6 +86,8 @@ class LinePrinter:
 		else:
 			self.printText(job['text'])
 			self.feed(3)
+
+		self.sleep();
 
                         
 
@@ -123,6 +126,13 @@ class LinePrinter:
 		for img in columns:
 			self.__printImage(img)
 
+	def wake(self):
+		if not self.printerDisabled:
+			self.printer.wake()
+
+	def sleep(self):
+		if not self.printerDisabled:
+			self.printer.sleep()
 
 	def feed(self,amount):
 		if not self.printerDisabled:
@@ -130,9 +140,7 @@ class LinePrinter:
 
 	def __printImage(self,img):
 		if not self.printerDisabled:
-			self.printer.wake()
 			self.printer.printImage(img,LaaT=False);
-			self.printer.sleep()
 		else:
 			img.show()
 
