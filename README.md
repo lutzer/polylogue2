@@ -72,11 +72,18 @@ An interactive installation for biennale 2016
   * edit `sudo nano /boot/config.txt`
 
     ```
+    # for low res screen
     hdmi_group=2
     hdmi_mode=1
     hdmi_mode=87
     hdmi_cvt 800 480 60 6 0 0 0
     max_usb_current=1
+
+    #for high res screen
+    hdmi_group=2
+    hdmi_mode=1
+    hdmi_mode=87
+    hdmi_cvt 1024 600 6 0 0 0
     ```
 
 * for keyboard
@@ -121,5 +128,4 @@ An interactive installation for biennale 2016
 * drucker schrift anpassen
   * zeilen umbruch
 * feedback dialog auf bildschirm
-* app fix reconnection bug
 

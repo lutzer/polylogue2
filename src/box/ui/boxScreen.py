@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 16:20:24
+# @Last Modified time: 2016-10-24 22:40:39
 
 import pyglet
 import sys
@@ -22,8 +22,8 @@ FONT_FAMILY = "Perfect DOS VGA 437"
 FONT_SIZE = int(30 * RES_MULTIPLIER)
 LINE_SPACING = int(45 * RES_MULTIPLIER)
 TEXT_LENGTH = 140
-TEXT_INDENT = int(85 * RES_MULTIPLIER)
-TEXT_PROMPT = "pl>"
+TEXT_INDENT = int(40 * RES_MULTIPLIER)
+TEXT_PROMPT = ">"
 
 # progress bar params
 BAR_HEIGHT = int(50 * RES_MULTIPLIER)
