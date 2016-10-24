@@ -42,6 +42,7 @@ def sendToPrinter(message):
    printer = LinePrinter()
 
    printer.printText(message)
+   printer.printer.feed(3)
    print 'done.'
 
 if __name__ == "__main__":

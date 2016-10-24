@@ -120,7 +120,7 @@ class LinePrinter:
 	def __printImage(self,img):
 		if not self.printerDisabled:
 			self.printer.wake()
-			self.printer.printImage(img);
+			self.printer.printImage(img,LaaT=False);
 			self.printer.sleep()
 
 
