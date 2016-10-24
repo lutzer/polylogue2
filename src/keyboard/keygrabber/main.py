@@ -2,10 +2,11 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-20 23:45:27
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 11:11:10
+# @Last Modified time: 2016-10-25 01:25:49
 
 import curses
 import logging
+import signal,sys
 
 from comm.keyboardSocketSender import KeyboardSocketSender
 
@@ -18,6 +19,8 @@ SERVER_PORT = 8091
 running = True
 stdscr = None
 socket = None
+
+lastKey = None
 
 def init():
 	global stdscr, socket
@@ -50,8 +53,10 @@ def stop():
 	if socket:
 		socket.stop()
 
+	sys.exit(0)
+
 def loop():
-	global stdscr, running, socket
+	global stdscr, running, socket,lastKey
 
 	try:
 		# get key
@@ -59,7 +64,7 @@ def loop():
 	except Exception:
 		c = 0
 
-	if c == 27: # escape key, quit program
+	if c == 27 and lastKey == 113: # escape key, quit program
 		running = False
 	elif c == curses.KEY_LEFT:
 		onKeypress(65361,motion=True)
@@ -76,6 +81,8 @@ def loop():
 	else:
 		onKeypress(c)
 
+	lastKey = c
+
 def onKeypress(key,motion=False):
 	global socket
 	
@@ -87,14 +94,16 @@ def onKeypress(key,motion=False):
 		socket.sendText(key)
 
 def printKey(string):
-	stdscr.addstr(0, 0, '                           ')
-	stdscr.addstr(0, 0, 'key pressed: ' + str(string))
+	stdscr.addstr(0, 0, '                           							')
+	stdscr.addstr(0, 0, 'key pressed: ' + str(string) +' lastKey: ' + str(lastKey))
 
-try:
-	init()
-	while running:
-		loop()
-except KeyboardInterrupt:
-   print("# program loop interrupted")
-finally:
-   stop()
+def catch_ctrl_C(sig,frame):
+    print 'quit by pressing first q, then escape twice.'
+
+signal.signal(signal.SIGINT, catch_ctrl_C)
+
+#
+init()
+while running:
+	loop()
+stop()
