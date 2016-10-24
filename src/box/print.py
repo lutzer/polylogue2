@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:20:38
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 14:06:29
+# @Last Modified time: 2016-10-24 16:39:39
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -43,7 +43,7 @@ def sendToPrinter(message):
    printer = LinePrinter(PRINTER_DISABLED)
 
    printer.printText(message)
-   printer.printer.feed(3)
+   printer.feed(5)
    print 'done.'
 
 if __name__ == "__main__":

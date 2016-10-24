@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 16:32:24
+# @Last Modified time: 2016-10-24 16:42:49
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -78,13 +78,13 @@ class LinePrinter:
 		
 		if job['type'] == "question":
 			self.printText(job['text'])
-			self.feed(10)
+			self.feed(6)
 		elif job['type'] == "line":
 			self.printText("-----")
-			self.feed(4)
+			self.feed(3)
 		else:
 			self.printText(job['text'])
-			self.feed(4)
+			self.feed(3)
 
                         
 
@@ -109,8 +109,8 @@ class LinePrinter:
 				# add character to column
 				column.paste(symbol, box=(startX, 0))
 			else:
-				# add to columns array
-				columns.prepend(column)
+				# prepend to columns array
+				columns.insert(0,column)
 
 				# start new column
 				column = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
@@ -120,7 +120,7 @@ class LinePrinter:
 				column.paste(symbol, box=(startX, 0))
 
 		# print all the columns
-		for img in columns
+		for img in columns:
 			self.__printImage(img)
 
 
