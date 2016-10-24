@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 22:46:18
+# @Last Modified time: 2016-10-24 23:14:59
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -28,6 +28,7 @@ class LinePrinter:
 
 	printer = None
 	fontRenderer = None
+	fontRendererBig = None
 
 	def __init__(self,disablePrinter=False):
 
@@ -39,6 +40,8 @@ class LinePrinter:
 
 		currentDir = sys.path[0]
 		self.fontRenderer = FontRenderer(currentDir +'/font/cutivemono32bold.png', currentDir + '/font/cutivemono32bold.json')
+		self.fontRendererBig = FontRenderer(currentDir +'/font/cutivemono42bold.png', currentDir + '/font/cutivemono42bold.json')
+        
                 
 		self.queue = [] # message queue
 		self.queueLock = Lock()
@@ -78,7 +81,7 @@ class LinePrinter:
 		self.wake();
 		
 		if job['type'] == "question":
-			self.printText(job['text'])
+			self.printText(job['text'],fontRendererBig)
 			self.feed(6)
 		elif job['type'] == "line":
 			self.printText("---=---",center=True)
@@ -91,8 +94,11 @@ class LinePrinter:
 
                         
 
-	def printText(self,text,center=False):
-		fontHeight = self.fontRenderer.fontHeight
+	def printText(self,text,font=False,center=False):
+		if not font:
+			font = self.fontRenderer
+
+		fontHeight = font.fontHeight
 
 		# holds all the images of the columns
 		columns = []
@@ -102,9 +108,9 @@ class LinePrinter:
 		for character in text:
 
 			#first create character
-			symbol = self.fontRenderer.getCharacterImage(character)
+			symbol = font.getCharacterImage(character)
 			symbol = symbol.rotate(180, 0, True)
-			symbol = self.fontRenderer.makeBgWhite(symbol)
+			symbol = font.makeBgWhite(symbol)
 
 			charWidth = symbol.size[0]
 			startX -= charWidth
