@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:30:39
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 13:11:36
+# @Last Modified time: 2016-10-24 16:20:24
 
 import pyglet
 import sys
@@ -13,9 +13,9 @@ from config import *
 from utils.eventHandler import EventHandler
 
 #colors
-BG_COLOR = [244, 223, 66, 255]
-TEXT_COLOR = [0,0,0,255]
-PROMPT_COLOR = [61,61,61,255]
+BG_COLOR = [0,0,0,255]
+TEXT_COLOR = [255, 255, 255, 255]
+PROMPT_COLOR = [244, 223, 66, 255]
 
 # console params
 FONT_FAMILY = "Perfect DOS VGA 437"
@@ -27,7 +27,7 @@ TEXT_PROMPT = "pl>"
 
 # progress bar params
 BAR_HEIGHT = 50
-BAR_COLOR = [0, 0, 0, 255]
+BAR_COLOR = [244, 223, 66, 255]
 STROKE_WIDTH = 4
 
 # dialog params
@@ -102,7 +102,8 @@ class Console(object):
 		self.document = pyglet.text.document.FormattedDocument(text)
 		self.document.set_style(0, TEXT_LENGTH, dict(
 			font_name= FONT_FAMILY, 
-			font_size=FONT_SIZE)
+			font_size=FONT_SIZE,
+			color=TEXT_COLOR)
 		)
 		self.document.set_paragraph_style(0, TEXT_LENGTH, dict(
 			line_spacing=str(LINE_SPACING)+"pt",
@@ -124,7 +125,7 @@ class Console(object):
 			batch=batch )
 
 		# add cursor
-		self.caret = pyglet.text.caret.Caret(self.layout)
+		self.caret = pyglet.text.caret.Caret(self.layout,color=TEXT_COLOR[:3])
 
 class BoxScreen(pyglet.window.Window):
 
