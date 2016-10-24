@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 16:26:01
+# @Last Modified time: 2016-10-24 16:32:24
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -91,8 +91,10 @@ class LinePrinter:
 	def printText(self,text):
 		fontHeight = self.fontRenderer.fontHeight
 
-		columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
-		
+		# holds all the images of the columns
+		columns = []
+
+		column = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
 		startX = PRINTER_PAPER_WIDTH # start from right
 		for character in text:
 
@@ -105,20 +107,21 @@ class LinePrinter:
 			startX -= charWidth
 			if startX > 0:
 				# add character to column
-				columnImg.paste(symbol, box=(startX, 0))
+				column.paste(symbol, box=(startX, 0))
 			else:
-				# print image
-				self.__printImage(columnImg)
+				# add to columns array
+				columns.prepend(column)
 
 				# start new column
-				columnImg = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
+				column = Image.new("RGB", (PRINTER_PAPER_WIDTH, fontHeight), (255, 255, 255))
 
 				# add character
 				startX = PRINTER_PAPER_WIDTH - charWidth
-				columnImg.paste(symbol, box=(startX, 0))
+				column.paste(symbol, box=(startX, 0))
 
-		# print the rest
-		self.__printImage(columnImg)
+		# print all the columns
+		for img in columns
+			self.__printImage(img)
 
 
 	def feed(self,amount):
