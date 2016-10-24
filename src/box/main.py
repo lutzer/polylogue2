@@ -91,8 +91,9 @@ def onBoxUnlocked():
    logger.info('Box unlocked')
    serverSocket.sendQuestionExpired(BOX_ID)
    keyboardSocket.sendAvailable(True);
-   linePrinter.addLine()
    linePrinter.addQuestion(currentQuestion)
+   linePrinter.addLine()
+   linePrinter.feed(3)
 
 def onBoxLock(question):
    global serverSocket, currentQuestion, linePrinter
