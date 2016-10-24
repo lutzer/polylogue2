@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:20:38
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-22 18:35:26
+# @Last Modified time: 2016-10-24 14:06:29
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -17,6 +17,7 @@
 
 from printer.linePrinter import LinePrinter
 import sys,getopt
+from config import *
 
 PRINTER_WIDTH_PIXELS = 384 # in pixels
 
@@ -39,7 +40,7 @@ def sendToPrinter(message):
 
    print 'Printing message:', message
 
-   printer = LinePrinter()
+   printer = LinePrinter(PRINTER_DISABLED)
 
    printer.printText(message)
    print 'done.'

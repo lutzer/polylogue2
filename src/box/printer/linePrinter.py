@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 23:40:03
+# @Last Modified time: 2016-10-24 14:05:19
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -120,6 +120,8 @@ class LinePrinter:
 			self.printer.wake()
 			self.printer.printImage(img);
 			self.printer.sleep()
+		else:
+			img.show()
 
 
 

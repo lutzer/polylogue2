@@ -67,6 +67,18 @@ An interactive installation for biennale 2016
   * install font: copy perfect dos font to **/usr/share/fonts**`
   * follow **Thermal printer setup**
 
+* setup display
+
+  * edit `sudo nano /boot/config.txt`
+
+    ```
+    hdmi_group=2
+    hdmi_mode=1
+    hdmi_mode=87
+    hdmi_cvt 800 480 60 6 0 0 0
+    max_usb_current=1
+    ```
+
 * for keyboard
 
   * add package source for node: `curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -`
@@ -94,6 +106,7 @@ An interactive installation for biennale 2016
 * disable serial console: `sudo raspi-config` -> Advanced Options -> Serial -> disable
 * enable part: `sudo nano /boot/config.txt`, change line: `enable_uart=1`
 * disable console:  `sudo systemctl stop serial-getty@ttyS0.service && sudo systemctl disable serial-getty@ttyS0.service `
+* change in Adafruit_Thermal.py heatDots to 2 and heatTime to 120change in Adafruit_Thermal.py heatDots to 2 and heatTime to 120
 
 ## Font generation
 
