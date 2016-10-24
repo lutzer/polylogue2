@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:15:49
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 12:44:50
+# @Last Modified time: 2016-10-25 00:31:53
 
 from __future__ import with_statement
 import time
@@ -93,7 +93,7 @@ def onBoxUnlocked():
    keyboardSocket.sendAvailable(True);
    linePrinter.addQuestion(currentQuestion)
    linePrinter.addLine()
-   linePrinter.feed(3)
+   linePrinter.feed(6)
 
 def onBoxLock(question):
    global serverSocket, currentQuestion, linePrinter

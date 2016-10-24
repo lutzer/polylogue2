@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-25 00:28:58
+# @Last Modified time: 2016-10-25 00:31:45
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -82,13 +82,13 @@ class LinePrinter:
 		
 		if job['type'] == "question":
 			self.printText(job['text'],self.fontRendererBig)
-			self.feed(3)
+			self.feed(6)
 		elif job['type'] == "line":
 			self.printText("---=---",center=True)
-			self.feed(3)
+			self.feed(6)
 		else:
 			self.printText(job['text'])
-			self.feed(3)
+			self.feed(6)
 
 		self.sleep();
 
