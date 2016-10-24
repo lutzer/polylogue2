@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 17:07:40
+# @Last Modified time: 2016-10-24 18:41:15
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -14,7 +14,7 @@
 from __future__ import with_statement
 from threading import Lock
 import logging
-from PIL import Image
+from PIL import Image,ImageChops
 import sys
 
 from Adafruit_Thermal import *
@@ -81,7 +81,7 @@ class LinePrinter:
 			self.printText(job['text'])
 			self.feed(6)
 		elif job['type'] == "line":
-			self.printText("-----")
+			self.printText("---=---",center=True)
 			self.feed(3)
 		else:
 			self.printText(job['text'])
@@ -91,7 +91,7 @@ class LinePrinter:
 
                         
 
-	def printText(self,text):
+	def printText(self,text,center=False):
 		fontHeight = self.fontRenderer.fontHeight
 
 		# holds all the images of the columns
@@ -121,6 +121,10 @@ class LinePrinter:
 				# add character
 				startX = PRINTER_PAPER_WIDTH - charWidth
 				column.paste(symbol, box=(startX, 0))
+
+		if center:
+			# shift column to the  left
+			column = ImageChops.offset(column,-startX/2,0)
 
 		#insert last column
 		columns.insert(0,column)
