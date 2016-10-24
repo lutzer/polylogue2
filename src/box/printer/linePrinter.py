@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-24 18:41:15
+# @Last Modified time: 2016-10-24 22:46:18
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -38,7 +38,7 @@ class LinePrinter:
 			self.printer.sleep()
 
 		currentDir = sys.path[0]
-		self.fontRenderer = FontRenderer(currentDir +'/font/cutivemono32.png', currentDir + '/font/cutivemono32.json')
+		self.fontRenderer = FontRenderer(currentDir +'/font/cutivemono32bold.png', currentDir + '/font/cutivemono32bold.json')
                 
 		self.queue = [] # message queue
 		self.queueLock = Lock()
