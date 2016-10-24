@@ -92,7 +92,6 @@ def onBoxUnlocked():
    serverSocket.sendQuestionExpired(BOX_ID)
    keyboardSocket.sendAvailable(True);
    linePrinter.addQuestion(currentQuestion)
-   linePrinter.addLine()
    linePrinter.feed(6)
 
 def onBoxLock(question):
