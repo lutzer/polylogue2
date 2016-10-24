@@ -18,3 +18,5 @@ BOX_ID = 0
 QUESTION_DURATION = 1000 * 60 * 1 # in miliseconds
 
 PRINTER_DISABLED = False
+
+RES_MULTIPLIER = 1.0
