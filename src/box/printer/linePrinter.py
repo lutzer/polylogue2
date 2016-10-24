@@ -81,7 +81,7 @@ class LinePrinter:
 		self.wake();
 		
 		if job['type'] == "question":
-			self.printText(job['text'],fontRendererBig)
+			self.printText(job['text'],self.fontRendererBig)
 			self.feed(6)
 		elif job['type'] == "line":
 			self.printText("---=---",center=True)
