@@ -43,6 +43,7 @@ def sendToPrinter(message):
    printer = LinePrinter(PRINTER_DISABLED)
 
    printer.printText(message)
+   printer.printer.feed(3)
    print 'done.'
 
 if __name__ == "__main__":
