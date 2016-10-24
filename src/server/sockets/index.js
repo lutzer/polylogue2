@@ -98,6 +98,10 @@ module.exports = function (http) {
 		};
 		socket.on('message:new', newMessageHandler);
 
+		function connectionPingHandler() {
+			socket.emit('connection:pong');
+		}
+		socket.on('connection:ping',connectionPingHandler)
 
 		function errorHandler(err) {
 			log("error","Socket error: ",err);
@@ -110,6 +114,7 @@ module.exports = function (http) {
 
 	        //remove server events
 	        socket.removeListener('message:new',newMessageHandler);
+	        socket.removeListener('connection:ping',connectionPingHandler);
 	        socket.removeListener('error',errorHandler);
 	    });
 

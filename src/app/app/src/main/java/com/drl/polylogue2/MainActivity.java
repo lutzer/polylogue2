@@ -1,22 +1,19 @@
 package com.drl.polylogue2;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
-import com.drl.polylogue2.utils.AlarmReceiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Calendar;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         // Logging
         Log = LoggerFactory.getLogger(MainActivity.class);
 
+        setFonts();
+
         // broadcast manager to communicate with service
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(ForegroundService.CONNECTED_BROADCAST));
 
@@ -60,6 +59,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Unregister since the activity is about to be closed.
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
+    public void setFonts() {
+        //load font
+        Typeface font = Typeface.createFromAsset(getAssets(), "perfect_dos.ttf");
+
+        ((TextView) findViewById(R.id.title)).setTypeface(font);
+        ((TextView) findViewById(R.id.textView1)).setTypeface(font);
+        ((TextView) findViewById(R.id.textView2)).setTypeface(font);
+        ((TextView) findViewById(R.id.textView3)).setTypeface(font);
     }
 
     public void onButtonClicked(View view) {

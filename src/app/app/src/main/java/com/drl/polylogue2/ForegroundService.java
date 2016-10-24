@@ -1,17 +1,21 @@
 package com.drl.polylogue2;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.transition.Visibility;
 
 
 import org.json.JSONException;
@@ -35,7 +39,7 @@ public class ForegroundService extends Service {
 
     private static final int SERVICE_NOTIFICATION_ID = 645;
     public static String WEBSOCKET_URL = "http://lu-re.de:8090/phone";
-    //public static String WEBSOCKET_URL = "http://192.168.72.100:8090/phone";
+    //public static String WEBSOCKET_URL = "http://192.168.72.101:8090/phone";
     public final int CONNECTION_CHECK_INTERVAL = 5000;
 
     public static String DELIVERED_BROADCAST = "delivered-broadcast";
@@ -52,6 +56,8 @@ public class ForegroundService extends Service {
 
     private Socket socket;
     ArrayList<String> fetchedSubmissions;
+
+    private boolean receivedPong = false;
 
     private Emitter.Listener onNewQuestion = new Emitter.Listener() {
 
@@ -91,6 +97,17 @@ public class ForegroundService extends Service {
         }
     };
 
+    private Emitter.Listener onReceivedPong = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+
+            Log.info(LOG_TAG + "Received Pong");
+            receivedPong = true;
+
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -102,6 +119,7 @@ public class ForegroundService extends Service {
             socket = IO.socket(WEBSOCKET_URL);
             socket.on("question:new",onNewQuestion);
             socket.on("connected", onSocketConnected);
+            socket.on("connection:pong", onReceivedPong);
 
         } catch (URISyntaxException e) {
             Log.error(LOG_TAG + e.getMessage());
@@ -112,6 +130,7 @@ public class ForegroundService extends Service {
         Log.info(LOG_TAG + "Service created");
 
         connectWebsocket();
+        socket.emit("connection:ping");
 
         keepServiceAlive();
 
@@ -124,7 +143,7 @@ public class ForegroundService extends Service {
 
         if (intent != null) {
 
-            Log.debug(LOG_TAG + "received command: "  + intent.getAction());
+            Log.debug(LOG_TAG + "received command: " + intent.getAction());
 
             if (intent.getAction().equals(ServiceAction.SEND_MESSSAGE)) {
 
@@ -148,9 +167,11 @@ public class ForegroundService extends Service {
 
             } else if (intent.getAction().equals(ServiceAction.CONNECT)) {
 
-                if (!socket.connected()) {
+                if (!receivedPong || !socket.connected()) {
                     connectWebsocket();
                 }
+                receivedPong = false;
+                socket.emit("connection:ping");
             }
         }
 
@@ -185,10 +206,9 @@ public class ForegroundService extends Service {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Polylogue2")
                 .setContentText("Message Service Running")
-                .setSmallIcon(R.drawable.message);
+                .setSmallIcon(R.drawable.service_icon);
 
         startForeground(SERVICE_NOTIFICATION_ID, mBuilder.build());
-
     }
 
 
@@ -223,9 +243,15 @@ public class ForegroundService extends Service {
 
     public void connectWebsocket() {
 
-        if (socket != null && !socket.connected()) {
-            Log.info(LOG_TAG + "Connecting to socket: " + WEBSOCKET_URL);
-            socket.connect();
+        if (socket != null) {
+            if (socket.connected()) {
+                Log.info(LOG_TAG + "Reconnecting to socket: " + WEBSOCKET_URL);
+                socket.disconnect();
+                socket.connect();
+            } else {
+                Log.info(LOG_TAG + "Connecting to socket: " + WEBSOCKET_URL);
+                socket.connect();
+            }
         }
     }
 
@@ -252,6 +278,7 @@ public class ForegroundService extends Service {
             .setContentTitle(action)
             .setContentText(question.question)
             .setContentIntent(resultPendingIntent)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setAutoCancel(true);
 
         // Gets an instance of the NotificationManager service

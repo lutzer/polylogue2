@@ -2,7 +2,7 @@
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-22 16:07:52
 # @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 12:51:02
+# @Last Modified time: 2016-10-23 23:40:03
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -76,13 +76,11 @@ class LinePrinter:
 		logger.info("printing" + str(job))
 
 		
-		self.printText(job['text'])
-		# if job['type'] == "question":
-  #                       self.__printText(job['text'])
-  #                       self.printer.feed(3)
-  #               else:
-  #                       self.printer.setSize('M')
-  #                       self.printer.println(job['text'])
+		if job['type'] == "question":
+			self.printText(job['text'])
+			self.printer.feed(3)
+		else:
+			self.printText(job['text'])
                         
 
 	def printText(self,text):

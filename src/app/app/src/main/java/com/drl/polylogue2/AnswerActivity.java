@@ -1,9 +1,12 @@
 package com.drl.polylogue2;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +15,11 @@ import android.text.InputFilter;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +53,7 @@ public class AnswerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
 
+
         // broadcast manager to communicate with service
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(ForegroundService.DELIVERED_BROADCAST));
 
@@ -55,6 +63,22 @@ public class AnswerActivity extends AppCompatActivity {
 
         initView();
 
+        setFonts();
+
+        setupHideKeyboard(findViewById(R.id.mainLayout));
+
+    }
+
+    public void setFonts() {
+        //load font
+        Typeface font = Typeface.createFromAsset(getAssets(), "perfect_dos.ttf");
+
+        ((TextView) findViewById(R.id.editText)).setTypeface(font);
+        ((TextView) findViewById(R.id.button)).setTypeface(font);
+        ((TextView) findViewById(R.id.messageView)).setTypeface(font);
+        ((TextView) findViewById(R.id.timerView)).setTypeface(font);
+        ((TextView) findViewById(R.id.promptText)).setTypeface(font);
+        ((TextView) findViewById(R.id.title)).setTypeface(font);
     }
 
     private void initView() {
@@ -81,6 +105,8 @@ public class AnswerActivity extends AppCompatActivity {
                     StringBuilder sb = new StringBuilder(end - start);
                     for (int i = start; i < end; i++) {
                         char c = source.charAt(i);
+                        if ((int)c == 10) //if return pressed
+                            hideSoftKeyboard(AnswerActivity.this);
                         if (isCharAllowed(c)) // put your condition here
                             sb.append(c);
                         else
@@ -102,11 +128,10 @@ public class AnswerActivity extends AppCompatActivity {
                 private boolean isCharAllowed(char c) {
                     return Pattern.matches("[\\x1f-\\x80]", Character.toString(c));
                 }
-
             };
             editText.setFilters(new InputFilter[] { asciFilter });
 
-                    //setup expiration time
+            //setup expiration time
             Date expiresAt = question.getExpiresAt();
             startTimer(expiresAt.getTime() - new Date().getTime());
         }
@@ -134,10 +159,10 @@ public class AnswerActivity extends AppCompatActivity {
 
     public void onMessageDelivered(boolean delivered) {
         if (delivered) {
-            Toast.makeText(this, "Message succesfully sent.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Message succesfully sent.", Toast.LENGTH_LONG).show();
             finish();
         } else
-            Toast.makeText(this, "ERROR: Message could not be sent. Check your internet connection and try again.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "ERROR: Message could not be sent. Check your internet connection and try again.", Toast.LENGTH_LONG).show();
 
     }
 
@@ -155,5 +180,34 @@ public class AnswerActivity extends AppCompatActivity {
                 timerText.setText("Question expired");
             }
         }.start();
+    }
+
+    public void setupHideKeyboard(View view) {
+
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard(AnswerActivity.this);
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupHideKeyboard(innerView);
+            }
+        }
+    }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
     }
 }

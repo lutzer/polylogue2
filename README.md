@@ -105,8 +105,8 @@ An interactive installation for biennale 2016
 
 
 
-* drucker anschliessen und steuerung
+* drucker schrift anpassen
+  * zeilen umbruch
 * feedback dialog auf bildschirm
-* fragen auf boxen verteilen
 * app fix reconnection bug
 
