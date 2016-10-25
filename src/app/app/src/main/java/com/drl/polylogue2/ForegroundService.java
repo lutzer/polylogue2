@@ -187,6 +187,7 @@ public class ForegroundService extends Service {
             socket.disconnect();
             socket.off("question:new", onNewQuestion);
             socket.off("connected", onSocketConnected);
+            socket.off("connection:pong", onReceivedPong);
         }
 
         //TODO: cancel alarmmanager
