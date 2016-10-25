@@ -38,8 +38,7 @@ import com.github.nkzawa.socketio.client.Socket;
 public class ForegroundService extends Service {
 
     private static final int SERVICE_NOTIFICATION_ID = 645;
-    public static String WEBSOCKET_URL = "http://lu-re.de:8090/phone";
-    //public static String WEBSOCKET_URL = "http://192.168.72.101:8090/phone";
+    public static String WEBSOCKET_URL = "http://46.38.236.160:8090/phone";
     public final int CONNECTION_CHECK_INTERVAL = 5000;
 
     public static String DELIVERED_BROADCAST = "delivered-broadcast";
