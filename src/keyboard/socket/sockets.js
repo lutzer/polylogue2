@@ -1,8 +1,8 @@
 /*
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-10-19 23:26:25
-* @Last Modified by:   lutzer
-* @Last Modified time: 2016-10-23 12:52:42
+ * @Last modified by:   lutz
+ * @Last modified time: 2018-09-09T22:09:57+02:00
 */
 
 'use strict';
@@ -47,7 +47,7 @@ module.exports = function (http) {
 	    	// send to one of the boxes
 	    	currentBox = getCurrentBox();
 	    	if (currentBox) {
-	    		//log("info","send keypress to : ",currentBox.socket.id);
+	    		log("info","send keypress to : ",currentBox.socket.id);
 	    		currentBox.socket.emit('keypress',key);
 	    	}
 	    }
@@ -60,7 +60,7 @@ module.exports = function (http) {
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
-	        log("info",'Socket: User disconnected');
+	        log("info",'Socket: Keyboard disconnected');
 
 	        //remove server events
 	        socket.removeListener('error',errorHandler);
@@ -76,13 +76,12 @@ module.exports = function (http) {
 	    log("info",'Socket: Box connected, usercount: '+ io.engine.clientsCount);
 
 	    // add socket to boxlist
-	    boxList[socket.id] = { 
+	    boxList[socket.id] = {
 	    	available : true,
 	    	socket: socket,
 	    }
 
 	    function onAvailable(available) {
-	    	console.log(available)
 	    	log("info","Box "+ socket.id+ "s et available: "+available);
 	    	boxList[socket.id].available = available;
 	    }
@@ -95,7 +94,7 @@ module.exports = function (http) {
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
-	        log("info",'Socket: User disconnected');
+	        log("info",'Socket: Box disconnected');
 
 	        // remove socket from boxlist
 	        delete boxList[socket.id];

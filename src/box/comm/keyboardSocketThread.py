@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 # @Date:   2016-10-18 11:21:32
-# @Last Modified by:   lutzer
-# @Last Modified time: 2016-10-23 12:44:00
+# @Last modified by:   lutz
+# @Last modified time: 2018-09-09T22:26:59+02:00
 
 from __future__ import with_statement
 from socketIO_client import SocketIO,BaseNamespace
@@ -19,7 +19,7 @@ class KeyboardSocketThread(Thread):
 	def __init__(self,address,port):
 		self.socket = SocketIO(address,port)
 		self.box_nsp = self.socket.define(BaseNamespace, '/box')
-		self.box_nsp.on('keypress', self.keypressEvent.emit)
+		self.box_nsp.on('keypress', self.onKeyPress)
 		Thread.__init__(self)
 
 	def run(self):
@@ -33,6 +33,10 @@ class KeyboardSocketThread(Thread):
 		logger.info('stopping Socket Thread.')
 		del self.keypressEvent
 		self.running = False
+
+	def onKeyPress(self,data): 
+		self.box_nsp.emit('received.keypress')
+		self.keypressEvent.emit(data)
 
 	def sendAvailable(self, available):
 		self.box_nsp.emit('available',available)
