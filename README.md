@@ -94,7 +94,7 @@ An interactive installation for biennale 2016
   * install pm2: `npm install -g pm2`
   * install dependencies, go to dir **src/keyboard/socket**, type: `npm install`
   * setup pm2
-    * `sudo pm2 startup systemd -u pi`
+    * `sudo pm2 startup`
     * `pm2 start src/keyboard/socket/main.js --name keyboardSocketServer`
     * `pm2 save`
   * autostart keyboard grabber:
