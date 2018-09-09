@@ -98,7 +98,7 @@ An interactive installation for biennale 2016
     * `pm2 start src/keyboard/socket/main.js --name keyboardSocketServer`
     * `pm2 save`
   * autostart keyboard grabber:
-    * add line to .bashrc: `/usb/bin/python2 /home/pi/polylogue2/src/keyboard/keygrabber/main.py`
+    * add line to .bashrc: `/usr/bin/python /home/pi/polylogue2/src/keyboard/keygrabber/main.py`
   * press ESC twice to exit keygrabber
 
 
