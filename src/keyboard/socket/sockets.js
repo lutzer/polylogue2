@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-10-19 23:26:25
  * @Last modified by:   lutz
- * @Last modified time: 2018-09-09T23:04:26+02:00
+ * @Last modified time: 2018-09-09T23:07:18+02:00
 */
 
 'use strict';
@@ -59,8 +59,8 @@ module.exports = function (http) {
 					clearTimeout(keypressTimeout);
 
 				keypressTimeout = setTimeout(() => {
-					if (_.has(currentBox,'available'))
-						currentBox.available = false;
+					// switch box
+					currentBox = getCurrentBox();
 				},KEYPRESS_TIMEOUT);
 	    	}
 	    }
