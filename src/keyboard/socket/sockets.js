@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-10-19 23:26:25
  * @Last modified by:   lutz
- * @Last modified time: 2018-09-09T23:38:47+02:00
+ * @Last modified time: 2018-09-09T23:43:34+02:00
 */
 
 'use strict';
@@ -64,16 +64,9 @@ module.exports = function (http) {
 				},KEYPRESS_TIMEOUT);
 
 	    		log("info","send keypress to : ",currentBox.socket.id);
-	    		currentBox.socket.emit('keypress',key);				
+	    		currentBox.socket.emit('keypress',key);
 	    	}
 	    }
-
-		function onKeyPressReceived() {
-			if (keypressTimeout)
-				clearTimeout(keypressTimeout);
-		}
-
-		socket.on('received.keypress', onKeyPressReceived)
 
 	    socket.on('keypress', onKeyPress)
 
@@ -115,6 +108,12 @@ module.exports = function (http) {
 			log("error","Socket error: ",err);
 		};
 		socket.on('error', errorHandler);
+
+		function onKeyPressReceived() {
+			if (keypressTimeout)
+				clearTimeout(keypressTimeout);
+		};
+		socket.on('received.keypress', onKeyPressReceived)
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
