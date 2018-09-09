@@ -88,7 +88,8 @@ An interactive installation for biennale 2016
 
 * for keyboard
 
-  * add package source for node: `curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -`
+  * upgrade package list: `sudo apt-get update`
+  * add package source for node: `curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -`
   * install npm and node:  `sudo apt-get install nodejs`
   * install pm2: `npm install -g pm2`
   * install dependencies, go to dir **src/keyboard/socket**, type: `npm install`
