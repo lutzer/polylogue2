@@ -69,6 +69,7 @@ module.exports = function (http) {
 	    }
 
 		function onKeyPressReceived() {
+			console.log("keypress received")
 			if (keypressTimeout)
 				clearTimeout(keypressTimeout);
 		}
