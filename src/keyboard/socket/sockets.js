@@ -2,10 +2,12 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-10-19 23:26:25
  * @Last modified by:   lutz
- * @Last modified time: 2018-09-09T22:09:57+02:00
+ * @Last modified time: 2018-09-09T23:04:26+02:00
 */
 
 'use strict';
+
+const KEYPRESS_TIMEOUT = 2000;
 
 var socketio = require('socket.io');
 var _ = require('underscore');
@@ -19,6 +21,8 @@ module.exports = function (http) {
 
 	var boxList = []
 	var currentBox = false
+
+	var keypressTimeout = null
 
 	function getCurrentBox() {
 
@@ -49,8 +53,25 @@ module.exports = function (http) {
 	    	if (currentBox) {
 	    		log("info","send keypress to : ",currentBox.socket.id);
 	    		currentBox.socket.emit('keypress',key);
+
+				// start timeout
+				if (keypressTimeout)
+					clearTimeout(keypressTimeout);
+
+				keypressTimeout = setTimeout(() => {
+					if (_.has(currentBox,'available'))
+						currentBox.available = false;
+				},KEYPRESS_TIMEOUT);
 	    	}
 	    }
+
+		function onKeyPressReceived() {
+			if (keypressTimeout)
+				clearTimeout(keypressTimeout);
+		}
+
+		socket.on('received.keypress', onKeyPressReceived)
+
 	    socket.on('keypress', onKeyPress)
 
 		function errorHandler(err) {
