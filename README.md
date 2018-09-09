@@ -100,6 +100,7 @@ An interactive installation for biennale 2016
   * autostart keyboard grabber:
     * add line to .bashrc: `/usr/bin/python /home/pi/polylogue2/src/keyboard/keygrabber/main.py`
   * press ESC twice to exit keygrabber
+  * run raspi-config to set up to boot in cli automaticly
 
 
 ## Router Config
