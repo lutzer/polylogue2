@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-10-19 23:26:25
  * @Last modified by:   lutz
- * @Last modified time: 2018-09-09T23:07:18+02:00
+ * @Last modified time: 2018-09-09T23:38:47+02:00
 */
 
 'use strict';
@@ -36,7 +36,7 @@ module.exports = function (http) {
 
 		// choose new box
 		var list = _.filter(_.values(boxList), function(ele) {
-			return ele.available && (currentId != ele.socket.id) 
+			return ele.available && (currentId != ele.socket.id)
 		});
 		if (list.length < 1)
 			return false;
@@ -53,9 +53,6 @@ module.exports = function (http) {
 	    	// send to one of the boxes
 	    	currentBox = getCurrentBox();
 	    	if (currentBox) {
-	    		log("info","send keypress to : ",currentBox.socket.id);
-	    		currentBox.socket.emit('keypress',key);
-
 				// start timeout
 				if (keypressTimeout)
 					clearTimeout(keypressTimeout);
@@ -65,6 +62,9 @@ module.exports = function (http) {
 					log("info","keypress timeout, changing box");
 					currentBox = getCurrentBox(true);
 				},KEYPRESS_TIMEOUT);
+
+	    		log("info","send keypress to : ",currentBox.socket.id);
+	    		currentBox.socket.emit('keypress',key);				
 	    	}
 	    }
 
