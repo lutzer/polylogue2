@@ -7,7 +7,7 @@
 
 'use strict';
 
-const KEYPRESS_TIMEOUT = 2000;
+const KEYPRESS_TIMEOUT = 5000;
 
 var socketio = require('socket.io');
 var _ = require('underscore');
@@ -24,17 +24,19 @@ module.exports = function (http) {
 
 	var keypressTimeout = null
 
-	function getCurrentBox() {
+	function getCurrentBox(changeBox) {
 
 		// return currently selected box
-		if (_.has(currentBox,'available')) {
+		if (!changeBox && _.has(currentBox,'available')) {
 			if (currentBox.available)
 				return currentBox;
 		}
 
+		var currentId = _.has(currentBox,"socket") ? currentBox.socket.id : -1;
+
 		// choose new box
 		var list = _.filter(_.values(boxList), function(ele) {
-			return ele.available
+			return ele.available && (currentId != ele.socket.id) 
 		});
 		if (list.length < 1)
 			return false;
@@ -60,7 +62,8 @@ module.exports = function (http) {
 
 				keypressTimeout = setTimeout(() => {
 					// switch box
-					currentBox = getCurrentBox();
+					log("info","keypress timeout, changing box");
+					currentBox = getCurrentBox(true);
 				},KEYPRESS_TIMEOUT);
 	    	}
 	    }
