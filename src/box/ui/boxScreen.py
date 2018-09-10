@@ -217,7 +217,9 @@ class BoxScreen(pyglet.window.Window):
 			if not self.isEditable:
 				return
 			if data['key'] == 10:
-				self.lockBox()
+				# only send msg if its longer than 3 chars
+				if len(self.getText()) > 3:
+					self.lockBox()
 			elif data['type'] == 'text':
 				self.dispatch_event('on_text',chr(data['key']))
 			else:
